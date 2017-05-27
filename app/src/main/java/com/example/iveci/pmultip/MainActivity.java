@@ -11,9 +11,10 @@ import android.widget.TextView;
 /*
 * MultiP
 * Description:
-* 뭔가를 재생하는 프로그램.
+* 이 어플리케이션은 음악을 재생합니다.
+*
 * Functions:
-* 미확정
+* 음악 재생/일시정지 (중지 없음?)
 *
 * Used other libraries:
 *
@@ -25,13 +26,13 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer player;
     ImageView albart;
     SeekBar timeseek;
-    TextView sinfo, ainfo;
+    TextView sinfo, ainfo, startpos, endpos;
     boolean play = false;
 
-    class mps extends Thread {
+    class mps extends Thread { //재생중일 때, 탐색바를 움직이는 thread를 생성합니다.
         @Override
         public void run() {
-            while(play){ //재생중인 경우, 탐색바를 움직입니다.
+            while(play){
                 timeseek.setProgress(player.getCurrentPosition());
             }
         }
@@ -42,18 +43,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         timeseek = (SeekBar) findViewById(R.id.timeseek);
-        player = MediaPlayer.create(getApplicationContext(),
-                R.raw.diamond);
+        player   = MediaPlayer.create(getApplicationContext(), R.raw.diamond);
+        sinfo    = (TextView) findViewById(R.id.songinfo);
     }
 
     public void onClick(View v){
         switch (v.getId()){
             case R.id.bprev :{
+                /*
+                * 이전 버튼입니다.
+                *
+                * 고려해야 할 사항.
+                *
+                * 현재 재생 위치가 임계값 미만인 경우
+                * 그렇지 않은 경우
+                * */
                 break;
             }
             case R.id.bstst :{
                 /*
-                재생/일시정지.
+                재생/일시정지 버튼입니다.
 
                 고려해야 할 사항.
 
@@ -64,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!player.isPlaying() && player.getCurrentPosition() != 0){ //일시정지일때
                     play = true;
                     player.start();
+                    new mps().start();
                 }
                 else if(!player.isPlaying()) { //플레이 안하고 있을때
                     player.setLooping(false);
@@ -79,6 +89,14 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             case R.id.bnext :{
+                /*
+                * 다음 버튼입니다.
+                *
+                * 고려해야 할 사항.
+                *
+                * 현재 재생 위치가 임계값 이상인 경우
+                * 그렇지 않은 경우
+                * */
                 break;
             }
         }
