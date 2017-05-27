@@ -32,8 +32,24 @@ public class MainActivity extends AppCompatActivity {
     class mps extends Thread { //재생중일 때, 탐색바를 움직이는 thread를 생성합니다.
         @Override
         public void run() {
+
             while(play){
-                timeseek.setProgress(player.getCurrentPosition());
+                final int spos = player.getCurrentPosition();
+                timeseek.setProgress(spos);
+                try {
+                    sleep(1000);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int spsc = spos%60000;
+                            startpos.setText(spos/60000+":"+spsc/10000+""+(spsc%10000)/1000);
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         }
     }
@@ -45,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
         timeseek = (SeekBar) findViewById(R.id.timeseek);
         player   = MediaPlayer.create(getApplicationContext(), R.raw.diamond);
         sinfo    = (TextView) findViewById(R.id.songinfo);
+        ainfo    = (TextView) findViewById(R.id.ars_albinfo);
+        startpos = (TextView) findViewById(R.id.sstartpos);
+        endpos   = (TextView) findViewById(R.id.sendpos);
     }
 
     public void onClick(View v){
@@ -79,8 +98,12 @@ public class MainActivity extends AppCompatActivity {
                     player.setLooping(false);
                     play = true;
                     player.start();
-                    timeseek.setMax(player.getDuration());
+                    int epos = player.getDuration();
+                    timeseek.setMax(epos);
+                    endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
                     new mps().start();
+                    startpos.setVisibility(View.VISIBLE);
+                    endpos.setVisibility(View.VISIBLE);
                 }
                 else { //플레이중일때
                     play = false;
