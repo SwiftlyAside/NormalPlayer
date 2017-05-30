@@ -35,13 +35,14 @@ import java.util.ArrayList;
 * 
 * */
 public class MainActivity extends AppCompatActivity {
-    MediaPlayer playback = new MediaPlayer();
+    MediaPlayer playback;
     ImageView albart;
     SeekBar timeseek;
     TextView sinfo, ainfo, startpos, endpos;
     private String MP = getExternalPath();
     private ArrayList<String> musics = new ArrayList<>();
     private ArrayAdapter<String> mlist;
+    private int count = 0;
     boolean play = false;
 
     class mps extends Thread { //재생중일 때, 탐색바를 움직이는 thread를 생성합니다.
@@ -123,11 +124,62 @@ public class MainActivity extends AppCompatActivity {
         }
         if (musics.size() > 0){
             try {
-                playback.setDataSource(MP+musics.get(0));
+                playback = new MediaPlayer();
+                playback.setDataSource(MP+musics.get(count));
                 playback.prepare();
+                playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        if (musics.size() > count) {
+                            try {
+                                mp.reset();
+                                mp = new MediaPlayer();
+                                mp.setDataSource(MP+musics.get(++count));
+                                mp.prepare();
+                                mp.start();
+                                int epos = mp.getDuration();
+                                timeseek.setMax(epos);
+                                endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
+                                play = true;
+                                new mps().start();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else {
+                            mp.reset();
+                        }
+                    }
+                });
+                timeseek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if (seekBar.getMax()==progress) {
+                            play = false;
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        play = false;
+                        playback.pause();
+                        play = true;
+                        playback.seekTo(seekBar.getProgress());
+                        playback.start();
+                        new mps().start();
+                    }
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        else{
+
         }
 
     }
