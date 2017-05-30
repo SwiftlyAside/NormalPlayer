@@ -18,7 +18,6 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 
 /*
@@ -138,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.bprev :{
                 /*
                 * 이전 버튼입니다.
+                *
                 *
                 * 고려해야 할 사항.
                 *
