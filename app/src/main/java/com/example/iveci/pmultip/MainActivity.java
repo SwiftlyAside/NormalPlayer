@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public String getExternalPath(){
+    public String getExternalPath(){ //SD카드 미디어폴더의 위치를 가져옵니다.
         String sdPath ="";
         String ext = Environment.getExternalStorageState();
         if(ext.equals(Environment.MEDIA_MOUNTED)){
