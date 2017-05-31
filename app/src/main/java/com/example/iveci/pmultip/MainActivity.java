@@ -129,12 +129,13 @@ public class MainActivity extends AppCompatActivity {
                 playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        if (musics.size()-1 > count) { //여러 파일이 동시에 열림 어서 수정하라
+                        if (musics.size()-1 > count) { //다음 곡이 있으면
                             try {
                                 mp.reset();
                                 mp.setDataSource(MP+musics.get(++count));
                                 mp.prepare();
                                 int epos = mp.getDuration();
+                                timeseek.setProgress(0);
                                 timeseek.setMax(epos);
                                 endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
                                 play = true;
@@ -144,7 +145,10 @@ public class MainActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
                         }
-                        else {
+                        else { //다음 곡이 없으면
+                            timeseek.setVisibility(View.INVISIBLE);
+                            startpos.setVisibility(View.INVISIBLE);
+                            endpos.setVisibility(View.INVISIBLE);
                             mp.reset();
                         }
                     }
@@ -154,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         if (seekBar.getMax()==progress) {
                             play = false;
-                            timeseek.setProgress(0);
                         }
                     }
 
@@ -166,8 +169,8 @@ public class MainActivity extends AppCompatActivity {
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         play = false;
                         playback.pause();
-                        play = true;
                         playback.seekTo(seekBar.getProgress());
+                        play = true;
                         playback.start();
                         new mps().start();
                     }
@@ -175,9 +178,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        else{
-
         }
 
     }
@@ -219,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
                     timeseek.setMax(epos);
                     endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
                     new mps().start();
+                    timeseek.setVisibility(View.VISIBLE);
                     startpos.setVisibility(View.VISIBLE);
                     endpos.setVisibility(View.VISIBLE);
                 }
