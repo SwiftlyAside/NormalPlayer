@@ -7,7 +7,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView albart;
     SeekBar timeseek;
     TextView sinfo, ainfo, startpos, endpos;
-    private String MP = getExternalPath();
+    private String MP = getExternalMediaPath();
     private ArrayList<String> musics = new ArrayList<>();
     private ArrayAdapter<String> mlist;
     private int count = 0;
@@ -78,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public String getExternalPath(){ //SD카드 미디어폴더의 위치를 가져옵니다.
+    public String getExternalMediaPath(){ //SD카드 미디어폴더의 위치를 가져옵니다.
         String sdPath ="";
         String ext = Environment.getExternalStorageState();
         if(ext.equals(Environment.MEDIA_MOUNTED)){
@@ -132,12 +131,18 @@ public class MainActivity extends AppCompatActivity {
                     public void onCompletion(MediaPlayer mp) {
                         if (musics.size() > count) {
                             try {
-                                mp.reset();
-                                mp = new MediaPlayer();
-                                mp.setDataSource(MP+musics.get(++count));
+                                /*mp.reset();
+                                mp = new MediaPlayer();*/
+                                count++;
+                                MediaPlayer mp2 = new MediaPlayer();
+                                mp2.setDataSource(MP+musics.get(count));
+                                mp2.prepare();
+                                mp.setNextMediaPlayer(mp2);
+                                /*mp.setDataSource(MP+musics.get(count));
                                 mp.prepare();
-                                mp.start();
-                                int epos = mp.getDuration();
+                                mp.start();*/
+                                int epos = mp2.getDuration();
+                                timeseek.setProgress(0);
                                 timeseek.setMax(epos);
                                 endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
                                 play = true;
