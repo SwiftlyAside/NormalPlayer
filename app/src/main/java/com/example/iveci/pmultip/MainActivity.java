@@ -7,6 +7,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 * 
 * */
 public class MainActivity extends AppCompatActivity {
-    MediaPlayer playback, playback2;
+    MediaPlayer playback;
     ImageView albart;
     SeekBar timeseek;
     TextView sinfo, ainfo, startpos, endpos;
@@ -129,28 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        if (musics.size()-1 > count) { //다음 곡이 있으면
-                            try {
-                                mp.reset();
-                                mp.setDataSource(MP+musics.get(++count));
-                                mp.prepare();
-                                int epos = mp.getDuration();
-                                timeseek.setProgress(0);
-                                timeseek.setMax(epos);
-                                endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
-                                play = true;
-                                mp.start();
-                                new mps().start();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        else { //다음 곡이 없으면
-                            timeseek.setVisibility(View.INVISIBLE);
-                            startpos.setVisibility(View.INVISIBLE);
-                            endpos.setVisibility(View.INVISIBLE);
-                            mp.reset();
-                        }
+                        setPlayNext(mp);
                     }
                 });
                 timeseek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -182,6 +162,31 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void setPlayNext(MediaPlayer mp){ //다음 곡을 있으면 재생합니다.
+        if (musics.size()-1 > count) { //다음 곡이 있으면
+            try {
+                mp.reset();
+                mp.setDataSource(MP+musics.get(++count));
+                mp.prepare();
+                int epos = mp.getDuration();
+                timeseek.setProgress(0);
+                timeseek.setMax(epos);
+                endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
+                play = true;
+                mp.start();
+                new mps().start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else { //다음 곡이 없으면
+            timeseek.setVisibility(View.INVISIBLE);
+            startpos.setVisibility(View.INVISIBLE);
+            endpos.setVisibility(View.INVISIBLE);
+            mp.reset();
+        }
+    }
+
     public void onClick(View v){
         switch (v.getId()){
             case R.id.bprev :{
@@ -191,9 +196,30 @@ public class MainActivity extends AppCompatActivity {
                 *
                 * 고려해야 할 사항.
                 *
-                * 현재 재생 위치가 임계값 미만인 경우
+                * 현재 재생 위치가 임계값 미만이면서 이전곡이 존재하는 경우
+                *   이전 곡으로.
                 * 그렇지 않은 경우
+                *   재생중이었던 경우
+                *       처음 위치에서 재생을 재개한다
+                *   그렇지 않은 경우 처음위치로만 간다
                 * */
+                if ((float) (timeseek.getProgress())/(float)(timeseek.getMax()) < 0.15 && count > 0) { //이전 곡으로 가야한다.
+                    Log.d("its under","15!");
+                }
+                else{ //처음 위치로 돌아가기 전에
+                    if (playback.isPlaying()) { //재생 중이었다면 처음위치에서 재생을 재개한다.
+                        play = false;
+                        playback.pause();
+                        playback.seekTo(0);
+                        play = true;
+                        playback.start();
+                        new mps().start();
+                    }
+                    else { //그렇지 않은 경우 처음 위치로만 간다.
+                        playback.seekTo(0);
+                    }
+
+                }
                 break;
             }
             case R.id.bstst :{
@@ -202,7 +228,8 @@ public class MainActivity extends AppCompatActivity {
 
                 고려해야 할 사항.
 
-                플레이 안하고 있을때
+                플레이어 준비가 안된 상태일때 (추가필요)
+                준비는 되어있으나 플레이 안하고 있을때
                 일시정지일때
                 플레이중일때
                  */
@@ -235,9 +262,16 @@ public class MainActivity extends AppCompatActivity {
                 *
                 * 고려해야 할 사항.
                 *
-                * 현재 재생 위치가 임계값 이상인 경우
+                * 다음곡이 없는 경우 재생을 종료한다
                 * 그렇지 않은 경우
+                *   재생중이었던 경우
+                *       다음 곡을 바로 재생한다
+                *   그렇지 않은 경우 다음 곡으로만 간다 (이부분만 이 문단에서 설계할것)
                 * */
+                if (!playback.isPlaying()) {
+
+                }
+                else setPlayNext(playback);
                 break;
             }
         }
