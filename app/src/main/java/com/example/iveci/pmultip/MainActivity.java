@@ -34,7 +34,7 @@ import java.util.ArrayList;
 * 
 * */
 public class MainActivity extends AppCompatActivity {
-    MediaPlayer playback;
+    MediaPlayer playback, playback2;
     ImageView albart;
     SeekBar timeseek;
     TextView sinfo, ainfo, startpos, endpos;
@@ -129,23 +129,16 @@ public class MainActivity extends AppCompatActivity {
                 playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        if (musics.size() > count) {
+                        if (musics.size()-1 > count) { //여러 파일이 동시에 열림 어서 수정하라
                             try {
-                                /*mp.reset();
-                                mp = new MediaPlayer();*/
-                                count++;
-                                MediaPlayer mp2 = new MediaPlayer();
-                                mp2.setDataSource(MP+musics.get(count));
-                                mp2.prepare();
-                                mp.setNextMediaPlayer(mp2);
-                                /*mp.setDataSource(MP+musics.get(count));
+                                mp.reset();
+                                mp.setDataSource(MP+musics.get(++count));
                                 mp.prepare();
-                                mp.start();*/
-                                int epos = mp2.getDuration();
-                                timeseek.setProgress(0);
+                                int epos = mp.getDuration();
                                 timeseek.setMax(epos);
                                 endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
                                 play = true;
+                                mp.start();
                                 new mps().start();
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -161,12 +154,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         if (seekBar.getMax()==progress) {
                             play = false;
+                            timeseek.setProgress(0);
                         }
                     }
 
                     @Override
                     public void onStartTrackingTouch(SeekBar seekBar) {
-
                     }
 
                     @Override
