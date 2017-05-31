@@ -26,7 +26,8 @@ import java.util.ArrayList;
 * 이 어플리케이션은 음악을 재생합니다.
 *
 * Functions:
-* 음악 재생/일시정지 (중지 없음?)
+* 음악 재생/일시정지
+* 이전/다음 곡 전환
 *
 * Used other libraries:
 *
