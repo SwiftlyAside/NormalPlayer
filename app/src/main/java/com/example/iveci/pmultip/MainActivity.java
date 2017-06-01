@@ -27,6 +27,7 @@ import java.util.ArrayList;
 *
 * Functions:
 * 음악 재생/일시정지
+* 트래킹바로 위치변경
 * 이전/다음 곡 전환
 *
 * Used other libraries:
