@@ -12,7 +12,8 @@
         android:id="@+id/ialbumart"
         android:layout_margin="25dp"
         android:layout_width="225dp"
-        android:layout_height="225dp" />
+        android:layout_height="225dp"
+        android:src="@drawable/nothing"/>
 
     <SeekBar
         android:id="@+id/timeseek"
