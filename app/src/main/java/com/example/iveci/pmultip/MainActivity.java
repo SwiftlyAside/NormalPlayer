@@ -309,6 +309,30 @@ public class MainActivity extends AppCompatActivity {
                 else setPlayNext(playback);
                 break;
             }
+            case R.id.repeat :{
+                /*
+                * 반복 버튼입니다.
+                *
+                * 고려해야 할 사항.
+                *
+                * 반복이 아닌 상태인 경우
+                *   반복으로 하고 활성 상태로 표시
+                * 그렇지 않은 경우
+                *   반복을 해제하고 비활성 상태로 표시
+                * */
+                break;
+            }
+            case R.id.shuffle :{
+                /*
+                * 섞기 버튼입니다.
+                *
+                * 고려해야 할 사항.
+                *
+                * 상동.
+                * 섞는 방법만 고민할것.
+                * */
+                break;
+            }
         }
     }
 }
