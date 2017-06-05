@@ -1,8 +1,9 @@
 package com.example.iveci.pmultip;
-
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -45,9 +46,12 @@ public class MainActivity extends AppCompatActivity {
     TextView sinfo, ainfo, startpos, endpos;
     private String MP = getExternalMediaPath();
     private ArrayList<String> musics = new ArrayList<>();
+    private ArrayList<Meta> metas = new ArrayList<>();
     private ArrayAdapter<String> mlist;
     private int count = 0;
     boolean play = false;
+
+    //UI처리 Thread
 
     class mps extends Thread { //재생중일 때, 탐색바를 움직이는 thread를 생성합니다.
         @Override
@@ -56,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 final int spos = playback.getCurrentPosition();
                 timeseek.setProgress(spos);
                 try {
-                    sleep(1000);
+                    sleep(110);//탐색바 갱신주기(ms단위). 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -72,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    //미디어처리
 
     class MFilter implements FilenameFilter { //음악파일만 반환하는 기능이 있는 클래스를 생성합니다.
 
@@ -100,6 +105,24 @@ public class MainActivity extends AppCompatActivity {
                 musics.add(file.getName());
             }
         }
+    }
+
+    public  void getMeta() { //음악의 메타데이터를 가져옵니다.
+        String[] projection = {MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
+                               MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST};
+
+        Cursor cursor = getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+
+        while (cursor.moveToNext()) {
+            Meta meta = new Meta();
+            meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
+            meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+            meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+            meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+            metas.add(meta);
+        }
+        cursor.close();
     }
 
     @Override
@@ -167,6 +190,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    //플레이어 제어
 
     public void setPlayNext(MediaPlayer mp){ //다음 곡을 있으면 재생합니다.
         if (musics.size()-1 > count) { //다음 곡이 있으면
@@ -243,8 +268,10 @@ public class MainActivity extends AppCompatActivity {
                     play = true;
                     playback.start();
                     new mps().start();
+                    iplay.setImageResource(R.drawable.pause);
                 }
                 else if(!playback.isPlaying()) { //플레이 안하고 있을때
+
                     playback.setLooping(false);
                     play = true;
                     playback.start();
@@ -255,10 +282,12 @@ public class MainActivity extends AppCompatActivity {
                     timeseek.setVisibility(View.VISIBLE);
                     startpos.setVisibility(View.VISIBLE);
                     endpos.setVisibility(View.VISIBLE);
+                    iplay.setImageResource(R.drawable.pause);
                 }
                 else { //플레이중일때
                     play = false;
                     playback.pause();
+                    iplay.setImageResource(R.drawable.play);
                 }
                 break;
             }
