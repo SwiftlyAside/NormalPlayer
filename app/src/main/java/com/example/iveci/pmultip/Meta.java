@@ -42,16 +42,6 @@ public class Meta implements Serializable {
         return title;
     }
 
-    @Override
-    public String toString() {
-        return "Meta{" +
-                "id='" + id + '\'' +
-                ", albumId='" + albumId + '\'' +
-                ", title='" + title + '\'' +
-                ", artist='" + artist + '\'' +
-                '}';
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -62,5 +52,15 @@ public class Meta implements Serializable {
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    @Override
+    public String toString() {
+        return "Meta{" +
+                "id='" + id + '\'' +
+                ", albumId='" + albumId + '\'' +
+                ", title='" + title + '\'' +
+                ", artist='" + artist + '\'' +
+                '}';
     }
 }
