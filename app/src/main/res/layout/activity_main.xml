@@ -12,8 +12,7 @@
         android:id="@+id/ialbumart"
         android:layout_margin="25dp"
         android:layout_width="225dp"
-        android:layout_height="225dp"
-        app:srcCompat="@mipmap/ic_launcher" />
+        android:layout_height="225dp" />
 
     <SeekBar
         android:id="@+id/timeseek"
@@ -47,6 +46,32 @@
             android:text="0:00" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/shuffle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="shuffle" />
+
+
+        <Button
+            android:id="@+id/repeat"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:text="repeat"/>
+    </LinearLayout>
+
+
     <TextView
         android:id="@+id/songinfo"
         android:textSize="32dp"
@@ -61,37 +86,41 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
-
-
         <Button
             android:id="@+id/bprev"
-            android:onClick="onClick"
-            android:clickable="false"
-            android:layout_margin="10dp"
             android:layout_width="75dp"
             android:layout_height="75dp"
+            android:layout_margin="10dp"
+            android:clickable="false"
+            android:onClick="onClick"
             android:text="Prev" />
 
-        <Button
+        <ImageButton
             android:id="@+id/bstst"
-            android:onClick="onClick"
-            android:layout_margin="10dp"
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:text="Play" />
+            android:layout_margin="10dp"
+            android:src="@drawable/play"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
+            android:onClick="onClick"
+            />
 
         <Button
             android:id="@+id/bnext"
-            android:onClick="onClick"
-            android:clickable="false"
-            android:layout_margin="10dp"
             android:layout_width="75dp"
             android:layout_height="75dp"
+            android:layout_margin="10dp"
+            android:clickable="false"
+            android:onClick="onClick"
             android:text="Next" />
 
     </LinearLayout>
+
+
+
 </LinearLayout>

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     MediaPlayer playback;
     ImageView albart;
+    ImageButton iplay;
     SeekBar timeseek;
     TextView sinfo, ainfo, startpos, endpos;
     private String MP = getExternalMediaPath();
@@ -104,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) { // 초기화, SD카드 미디어폴더접근권한을 확인합니다.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        albart   = (ImageView)findViewById(R.id.ialbumart);
+        iplay    = (ImageButton)findViewById(R.id.bstst);
         timeseek = (SeekBar) findViewById(R.id.timeseek);
         sinfo    = (TextView) findViewById(R.id.songinfo);
         ainfo    = (TextView) findViewById(R.id.ars_albinfo);
