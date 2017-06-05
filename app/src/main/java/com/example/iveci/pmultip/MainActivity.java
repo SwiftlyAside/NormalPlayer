@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 final int spos = playback.getCurrentPosition();
                 timeseek.setProgress(spos);
                 try {
-                    sleep(110);//탐색바 갱신주기(ms단위). (50~1000) 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
+                    sleep(110); //탐색바 갱신주기(ms단위). (50~1000) 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
