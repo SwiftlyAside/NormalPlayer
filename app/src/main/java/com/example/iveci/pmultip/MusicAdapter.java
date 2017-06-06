@@ -19,6 +19,8 @@ import java.util.ArrayList;
 
 /**
  * Created by iveci on 2017-06-05.
+ * 정렬기능
+ *
  */
 
 public class MusicAdapter extends BaseAdapter {

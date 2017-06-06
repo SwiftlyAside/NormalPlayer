@@ -1,0 +1,70 @@
+package com.example.iveci.pmultip;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.provider.MediaStore;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.ListViewCompat;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+
+/*
+* Explorer
+* Description:
+* 이 Activity는 재생목록 탐색과 생성을 담당합니다.
+*
+* Functions:
+* 재생목록 표시
+* 재생목록 생성(미구현)
+* 재생목록 검색(미구현)
+* 분류화(노래/앨범/아티스트) (미구현)
+*
+* */
+
+public class Explorer extends AppCompatActivity {
+    ListView listView;
+    ArrayList<Meta> musics;
+    MusicAdapter adapter;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_explorer);
+        listView = (ListView) findViewById(R.id.mlist);
+        getMeta();
+        adapter = new MusicAdapter(this, musics);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(Explorer.this, Playback.class);
+                intent.putExtra("pos", position);
+                intent.putExtra("playlist", musics);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void getMeta() { //음악의 메타데이터를 가져옵니다.
+        musics = new ArrayList<>();
+        String[] projection = {MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
+                               MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST,
+                               MediaStore.Audio.Media.CONTENT_TYPE};
+
+        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+
+        while (cursor.moveToNext()) {
+            Meta meta = new Meta();
+            meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
+            meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+            meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+            meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+            meta.setMtype(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.CONTENT_TYPE)));
+            musics.add(meta);
+        }
+        cursor.close();
+    }
+}

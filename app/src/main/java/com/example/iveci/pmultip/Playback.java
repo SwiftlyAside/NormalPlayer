@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /*
-* MultiP
+* Playback
 * Description:
-* 이 어플리케이션은 음악을 재생합니다.
+* 이 Activity는 음악을 재생합니다.
 *
 * Functions:
 * 음악 재생/일시정지
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 * 이 프로그램에서 상단바는 쓰지 않음.
 * 
 * */
-public class MainActivity extends AppCompatActivity {
+public class Playback extends AppCompatActivity {
     MediaPlayer playback;
     ImageView albart;
     ImageButton iplay;
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> musics = new ArrayList<>();
     private ArrayList<Meta> metas = new ArrayList<>();
     private ArrayAdapter<String> mlist;
-    private int count = 0;
+    private int pos = 0;
     boolean play = false;
 
     //UI처리 Thread
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     //미디어처리
 
     class MFilter implements FilenameFilter { //음악파일만 반환하는 기능이 있는 클래스를 생성합니다.
@@ -107,24 +108,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getMeta() { //음악의 메타데이터를 가져옵니다.
-        String[] projection = {MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
-                               MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST};
-
-        Cursor cursor = getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
-
-        while (cursor.moveToNext()) {
-            Meta meta = new Meta();
-            meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
-            meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
-            meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-            meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-            metas.add(meta);
-        }
-        cursor.close();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) { // 초기화, SD카드 미디어폴더접근권한을 확인합니다.
         super.onCreate(savedInstanceState);
@@ -154,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         if (musics.size() > 0){
             try {
                 playback = new MediaPlayer();
-                playback.setDataSource(MP+musics.get(count));
+                playback.setDataSource(MP+musics.get(pos));
                 playback.prepare();
                 playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
@@ -194,10 +177,10 @@ public class MainActivity extends AppCompatActivity {
     //플레이어 제어
 
     public void setPlayNext(MediaPlayer mp){ //다음 곡을 있으면 재생합니다.
-        if (musics.size()-1 > count) { //다음 곡이 있으면
+        if (musics.size()-1 > pos) { //다음 곡이 있으면
             try {
                 mp.reset();
-                mp.setDataSource(MP+musics.get(++count));
+                mp.setDataSource(MP+musics.get(++pos));
                 mp.prepare();
                 int epos = mp.getDuration();
                 timeseek.setProgress(0);
@@ -211,9 +194,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else { //다음 곡이 없으면
-            timeseek.setVisibility(View.INVISIBLE);
-            startpos.setVisibility(View.INVISIBLE);
-            endpos.setVisibility(View.INVISIBLE);
+            if (!mp.isLooping()) mp.stop();
+            else {
+                timeseek.setVisibility(View.INVISIBLE);
+                startpos.setVisibility(View.INVISIBLE);
+                endpos.setVisibility(View.INVISIBLE);
+            }
+            pos = 0;
             mp.reset();
         }
     }
@@ -234,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                 *       처음 위치에서 재생을 재개한다
                 *   그렇지 않은 경우 처음위치로만 간다
                 * */
-                if ((float) (timeseek.getProgress())/(float)(timeseek.getMax()) < 0.15 && count > 0) { //이전 곡으로 가야한다.
+                if ((float) (timeseek.getProgress())/(float)(timeseek.getMax()) < 0.15 && pos > 0) { //이전 곡으로 가야한다.
                     Log.d("its under","15!");
                 }
                 else{ //처음 위치로 돌아가기 전에

@@ -11,6 +11,7 @@ public class Meta implements Serializable {
     private String albumId;
     private String title;
     private String artist;
+    private String mtype;
 
     public Meta() {
     }
@@ -54,6 +55,14 @@ public class Meta implements Serializable {
         this.artist = artist;
     }
 
+    public String getMtype() {
+        return mtype;
+    }
+
+    public void setMtype(String mtype) {
+        this.mtype = mtype;
+    }
+
     @Override
     public String toString() {
         return "Meta{" +
@@ -61,6 +70,7 @@ public class Meta implements Serializable {
                 ", albumId='" + albumId + '\'' +
                 ", title='" + title + '\'' +
                 ", artist='" + artist + '\'' +
+                ", mtype='" + mtype + '\'' +
                 '}';
     }
 }

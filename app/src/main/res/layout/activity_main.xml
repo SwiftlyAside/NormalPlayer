@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context="com.example.iveci.pmultip.MainActivity">
+    tools:context="com.example.iveci.pmultip.Playback">
 
     <ImageView
         android:id="@+id/ialbumart"
