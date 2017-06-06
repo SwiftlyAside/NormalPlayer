@@ -96,8 +96,8 @@ public class Playback extends AppCompatActivity {
         ainfo    = (TextView) findViewById(R.id.ars_albinfo);
         nowpos   = (TextView) findViewById(R.id.snowpos);
         endpos   = (TextView) findViewById(R.id.sendpos);
-        sinfo.setMovementMethod(new ScrollingMovementMethod());
-        ainfo.setMovementMethod(new ScrollingMovementMethod());
+        sinfo.setSelected(true);
+        ainfo.setSelected(true);
         Intent intent = getIntent();
         pos = intent.getIntExtra("pos", 0);
         m_musics = (ArrayList<Meta>) intent.getSerializableExtra("playlist");
@@ -111,6 +111,7 @@ public class Playback extends AppCompatActivity {
             public void onCompletion(MediaPlayer mp) {
                 if (pos < m_musics.size() - 1)
                     setPlay(m_musics.get(++pos));
+                else finish();
             }
         });
 
@@ -249,11 +250,13 @@ public class Playback extends AppCompatActivity {
                 * 다음 버튼입니다.
                 *
                 * 고려해야 할 사항.
-                * 다음 곡으로만 간다
+                * 다음 곡이 남은 경우
+                *   다음 곡으로만 간다
+                * 없으면 끝낸다
                 * */
                 if (pos < m_musics.size() - 1)
                     setPlay(m_musics.get(++pos));
-
+                else finish();
                 break;
             }
             case R.id.repeat :{

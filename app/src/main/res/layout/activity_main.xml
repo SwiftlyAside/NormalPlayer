@@ -75,19 +75,27 @@
 
     <TextView
         android:id="@+id/songinfo"
-        android:textSize="22dp"
+        android:textSize="22sp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:scrollHorizontally="true"
+        android:focusable="true"
         android:maxLines="1"
-        android:scrollbars="horizontal"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/ars_albinfo"
-        android:textSize="14dp"
+        android:textSize="14sp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:scrollHorizontally="true"
+        android:focusable="true"
+        android:maxLines="1"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
