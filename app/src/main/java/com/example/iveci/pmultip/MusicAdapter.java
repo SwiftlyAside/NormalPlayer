@@ -69,7 +69,7 @@ public class MusicAdapter extends BaseAdapter {
 
     private Bitmap getAlbumart(Context context, int albumid, int imgsize) { //앨범아트를 불러옵니다. 사이즈가 맞지 않는경우 이 안에서 스케일링합니다.
         ContentResolver resolver = context.getContentResolver();
-        Uri uri = Uri.parse("content://media/external/audio/albumart" + albumid);
+        Uri uri = Uri.parse("content://media/external/audio/albumart/" + albumid);
         if(uri != null) {
             ParcelFileDescriptor fileDescriptor = null;
             try {

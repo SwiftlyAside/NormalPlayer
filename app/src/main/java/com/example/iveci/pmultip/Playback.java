@@ -40,7 +40,7 @@ import java.util.ArrayList;
 * 
 * */
 public class Playback extends AppCompatActivity {
-    MediaPlayer playback;
+    MediaPlayer playback = new MediaPlayer();
     ImageView album;
     ImageButton iplay;
     SeekBar timeseek;

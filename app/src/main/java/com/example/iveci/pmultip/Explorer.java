@@ -73,7 +73,7 @@ public class Explorer extends AppCompatActivity {
         musics = new ArrayList<>();
         String[] column = {MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
                            MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
-                           MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.CONTENT_TYPE};
+                           MediaStore.Audio.Media.ARTIST/*, MediaStore.Audio.Media.CONTENT_TYPE*/};
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, column, null, null, null);
 
@@ -84,7 +84,7 @@ public class Explorer extends AppCompatActivity {
             meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
             meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
             meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-            meta.setMtype(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.CONTENT_TYPE)));
+//            meta.setMtype(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.CONTENT_TYPE))); //버그있음
             musics.add(meta);
         }
         cursor.close();
