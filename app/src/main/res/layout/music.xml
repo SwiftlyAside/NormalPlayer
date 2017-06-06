@@ -20,7 +20,8 @@
         <TextView
             android:id="@+id/tsongname"
             android:layout_margin="5dp"
-            android:textSize="25dp"
+            android:textSize="20dp"
+            android:textColor="#000000"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Songname" />
@@ -28,7 +29,7 @@
         <TextView
             android:id="@+id/tartist"
             android:layout_margin="5dp"
-            android:textSize="15dp"
+            android:textSize="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Artist" />

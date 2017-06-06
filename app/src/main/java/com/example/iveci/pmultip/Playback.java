@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -45,8 +46,6 @@ public class Playback extends AppCompatActivity {
     ImageButton iplay;
     SeekBar timeseek;
     TextView sinfo, ainfo, nowpos, endpos;
-    private String MP = getExternalMediaPath();
-    private ArrayList<String> musics = new ArrayList<>();
     private ArrayList<Meta> m_musics;
     private ContentResolver resolver;
     private int pos = 0;
@@ -61,7 +60,7 @@ public class Playback extends AppCompatActivity {
                 final int spos = playback.getCurrentPosition();
                 timeseek.setProgress(spos);
                 try {
-                    sleep(200); //탐색바 갱신주기(ms단위). (50~1000) 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
+                    sleep(300); //탐색바 갱신주기(ms단위). (100~1000) 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -80,35 +79,6 @@ public class Playback extends AppCompatActivity {
 
     //미디어처리
 
-    class MFilter implements FilenameFilter { //음악파일만 반환하는 기능이 있는 클래스를 생성합니다.
-
-        @Override
-        public boolean accept(File dir, String name) {
-            return (name.endsWith(".mp3") || name.endsWith(".m4a")|| name.endsWith(".wav")
-                ||  name.endsWith(".flac")|| name.endsWith(".ogg"));
-        }
-    }
-
-    public String getExternalMediaPath(){ //SD카드 미디어폴더의 위치를 가져옵니다.
-        String sdPath;
-        String ext = Environment.getExternalStorageState();
-        if(ext.equals(Environment.MEDIA_MOUNTED)){
-            sdPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
-                    .getAbsolutePath() + "/";
-        }
-        else sdPath = getFilesDir() + "";
-        return sdPath;
-    }
-
-    public void refresh(){ //재생목록을 갱신합니다.
-        File exdir = new File(MP);
-        if (exdir.listFiles(new MFilter()).length > 0) {
-            for (File file:exdir.listFiles(new MFilter())){
-                musics.add(file.getName());
-            }
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -120,25 +90,9 @@ public class Playback extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) { // 초기화, SD카드 미디어폴더접근권한을 확인합니다.
+    protected void onCreate(Bundle savedInstanceState) { //초기화
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //권한체크
-        int permissioninfo = ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permissioninfo == PackageManager.PERMISSION_DENIED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                Toast.makeText(getApplicationContext(),
-                        "SDCard 쓰기 권한이 필요합니다. \n" + "설정에서 수동으로 활성화해주세요.",Toast.LENGTH_SHORT).show();
-            }
-            else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
-            }
-        }
-
         album    = (ImageView)findViewById(R.id.ialbumart);
         iplay    = (ImageButton)findViewById(R.id.bstst);
         timeseek = (SeekBar) findViewById(R.id.timeseek);
@@ -146,6 +100,8 @@ public class Playback extends AppCompatActivity {
         ainfo    = (TextView) findViewById(R.id.ars_albinfo);
         nowpos   = (TextView) findViewById(R.id.snowpos);
         endpos   = (TextView) findViewById(R.id.sendpos);
+        sinfo.setMovementMethod(new ScrollingMovementMethod());
+        ainfo.setMovementMethod(new ScrollingMovementMethod());
         Intent intent = getIntent();
         pos = intent.getIntExtra("pos", 0);
         m_musics = (ArrayList<Meta>) intent.getSerializableExtra("playlist");
@@ -175,11 +131,7 @@ public class Playback extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                play = false;
-                playback.pause();
                 playback.seekTo(seekBar.getProgress());
-                playback.start();
-                new mps().start();
             }
         });
     }
@@ -199,38 +151,12 @@ public class Playback extends AppCompatActivity {
             endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
             play = true;
             playback.start();
+            timeseek.setVisibility(View.VISIBLE);
+            nowpos.setVisibility(View.VISIBLE);
+            endpos.setVisibility(View.VISIBLE);
             new mps().start();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void setPlayNext(MediaPlayer playback){ //다음 곡을 있으면 재생합니다.
-        if (musics.size()-1 > pos) { //다음 곡이 있으면
-            try {
-                playback.reset();
-                playback.setDataSource(MP+musics.get(++pos));
-                playback.prepare();
-                int epos = playback.getDuration();
-                timeseek.setProgress(0);
-                timeseek.setMax(epos);
-                endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
-                play = true;
-                playback.start();
-                new mps().start();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else { //다음 곡이 없으면
-            if (!playback.isLooping()) playback.stop();
-            else {
-                timeseek.setVisibility(View.INVISIBLE);
-                nowpos.setVisibility(View.INVISIBLE);
-                endpos.setVisibility(View.INVISIBLE);
-            }
-            pos = 0;
-            playback.reset();
         }
     }
 
@@ -251,16 +177,16 @@ public class Playback extends AppCompatActivity {
                 *   그렇지 않은 경우 처음위치로만 간다
                 * */
                 if ((float) (timeseek.getProgress())/(float)(timeseek.getMax()) < 0.15 && pos > 0) { //이전 곡으로 가야한다.
-                    Log.d("its under","15!");
+                    setPlay(m_musics.get(--pos));
                 }
                 else{ //처음 위치로 돌아가기 전에
                     if (playback.isPlaying()) { //재생 중이었다면 처음위치에서 재생을 재개한다.
-                        play = false;
-                        playback.pause();
+/*                        play = false;
+                        playback.pause();*/
                         playback.seekTo(0);
-                        play = true;
+/*                        play = true;
                         playback.start();
-                        new mps().start();
+                        new mps().start();*/
                     }
                     else { //그렇지 않은 경우 처음 위치로만 간다.
                         playback.seekTo(0);
@@ -287,8 +213,6 @@ public class Playback extends AppCompatActivity {
                     iplay.setImageResource(R.drawable.pause);
                 }
                 else if(!playback.isPlaying()) { //플레이 안하고 있을때
-
-                    playback.setLooping(false);
                     play = true;
                     playback.start();
                     int epos = playback.getDuration();
@@ -312,17 +236,10 @@ public class Playback extends AppCompatActivity {
                 * 다음 버튼입니다.
                 *
                 * 고려해야 할 사항.
-                *
-                * 다음곡이 없는 경우 재생을 종료한다
-                * 그렇지 않은 경우
-                *   재생중이었던 경우
-                *       다음 곡을 바로 재생한다
-                *   그렇지 않은 경우 다음 곡으로만 간다 (이부분만 이 문단에서 설계할것)
+                * 다음 곡으로만 간다
                 * */
-                if (!playback.isPlaying()) {
-
-                }
-                else setPlayNext(playback);
+                if (pos < m_musics.size() - 1)
+                    setPlay(m_musics.get(++pos));
                 break;
             }
             case R.id.repeat :{
