@@ -1,26 +1,22 @@
 package com.example.iveci.pmultip;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -140,7 +136,8 @@ public class Playback extends AppCompatActivity {
 
     public void setPlay(Meta meta) { //메타데이터로 재생합니다.
         try {
-            sinfo.setText(meta.getArtist() + " - " + meta.getAlbum());
+            sinfo.setText(meta.getTitle());
+            ainfo.setText(meta.getArtist() + " - " + meta.getAlbum());
             Uri musicuri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, meta.getId());
             playback.reset();
             playback.setDataSource(this, musicuri);
@@ -154,10 +151,26 @@ public class Playback extends AppCompatActivity {
             timeseek.setVisibility(View.VISIBLE);
             nowpos.setVisibility(View.VISIBLE);
             endpos.setVisibility(View.VISIBLE);
+            Bitmap bitmap = BitmapFactory.decodeFile(getAlbumart(Long.parseLong(meta.getAlbumId()),getApplicationContext()));
+            album.setImageBitmap(bitmap);
             new mps().start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getAlbumart(long albumid, Context context) {
+        Cursor album = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + " = ?",
+                new String[]{Long.toString(albumid)},
+                null);
+        String result = null;
+        if (album.moveToFirst())
+            result = album.getString(0);
+        album.close();
+        return result;
     }
 
     public void onClick(View v){
@@ -240,6 +253,7 @@ public class Playback extends AppCompatActivity {
                 * */
                 if (pos < m_musics.size() - 1)
                     setPlay(m_musics.get(++pos));
+
                 break;
             }
             case R.id.repeat :{
