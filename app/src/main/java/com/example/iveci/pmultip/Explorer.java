@@ -1,14 +1,18 @@
 package com.example.iveci.pmultip;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ListViewCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -33,34 +37,52 @@ public class Explorer extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explorer);
-        listView = (ListView) findViewById(R.id.mlist);
-        getMeta();
-        adapter = new MusicAdapter(this, musics);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(Explorer.this, Playback.class);
-                intent.putExtra("pos", position);
-                intent.putExtra("playlist", musics);
-                startActivity(intent);
+        //권한체크
+        int permissioninfo = ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissioninfo == PackageManager.PERMISSION_DENIED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                Toast.makeText(getApplicationContext(),
+                        "SDCard 쓰기 권한이 필요합니다. \n" + "설정에서 수동으로 활성화해주세요.",Toast.LENGTH_SHORT).show();
             }
-        });
+            else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+            }
+        }
+        else {
+            listView = (ListView) findViewById(R.id.mlist);
+            getMeta();
+            adapter = new MusicAdapter(this, musics);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(Explorer.this, Playback.class);
+                    intent.putExtra("pos", position);
+                    intent.putExtra("playlist", musics);
+                    startActivity(intent);
+                }
+            });
+        }
+
     }
 
     public void getMeta() { //음악의 메타데이터를 가져옵니다.
         musics = new ArrayList<>();
-        String[] projection = {MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
-                               MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ARTIST,
-                               MediaStore.Audio.Media.CONTENT_TYPE};
+        String[] column = {MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
+                           MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
+                           MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.CONTENT_TYPE};
 
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, null, null, null);
+        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, column, null, null, null);
 
         while (cursor.moveToNext()) {
             Meta meta = new Meta();
             meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
             meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
             meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+            meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
             meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
             meta.setMtype(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.CONTENT_TYPE)));
             musics.add(meta);

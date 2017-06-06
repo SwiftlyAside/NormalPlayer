@@ -1,15 +1,14 @@
 package com.example.iveci.pmultip;
+
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -39,7 +38,7 @@ import java.util.ArrayList;
 * 이 프로그램에서 상단바는 쓰지 않음.
 * 
 * */
-public class Playback extends AppCompatActivity {
+public class Playback_old extends AppCompatActivity {
     MediaPlayer playback;
     ImageView album;
     ImageButton iplay;
@@ -61,7 +60,7 @@ public class Playback extends AppCompatActivity {
                 final int spos = playback.getCurrentPosition();
                 timeseek.setProgress(spos);
                 try {
-                    sleep(200); //탐색바 갱신주기(ms단위). (50~1000) 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
+                    sleep(110); //탐색바 갱신주기(ms단위). (50~1000) 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -110,24 +109,15 @@ public class Playback extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        play = false;
-        if(playback != null) {
-            playback.release();
-            playback = null;
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) { // 초기화, SD카드 미디어폴더접근권한을 확인합니다.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //권한체크
         int permissioninfo = ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permissioninfo == PackageManager.PERMISSION_DENIED) {
+        if (permissioninfo == PackageManager.PERMISSION_GRANTED)
+            refresh();
+        else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE)){
                 Toast.makeText(getApplicationContext(),
@@ -151,86 +141,74 @@ public class Playback extends AppCompatActivity {
         m_musics = (ArrayList<Meta>) intent.getSerializableExtra("playlist");
         resolver = getContentResolver();
 
-        setPlay(m_musics.get(pos));
-        new mps().start();
+        if (musics.size() > 0){
+            try {
+                playback = new MediaPlayer();
+                playback.setDataSource(MP+musics.get(pos));
+                playback.prepare();
+                playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        setPlayNext(mp);
+                    }
+                });
+                timeseek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if (seekBar.getMax()==progress) {
+                            play = false;
+                        }
+                    }
 
-        playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                if (pos < m_musics.size() - 1)
-                    setPlay(m_musics.get(++pos));
-            }
-        });
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
 
-        timeseek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (seekBar.getMax() == progress)
-                    play = false;
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        play = false;
+                        playback.pause();
+                        playback.seekTo(seekBar.getProgress());
+                        play = true;
+                        playback.start();
+                        new mps().start();
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                play = false;
-                playback.pause();
-                playback.seekTo(seekBar.getProgress());
-                playback.start();
-                new mps().start();
-            }
-        });
     }
 
     //플레이어 제어
 
-    public void setPlay(Meta meta) { //메타데이터로 재생합니다.
-        try {
-            sinfo.setText(meta.getArtist() + " - " + meta.getAlbum());
-            Uri musicuri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, meta.getId());
-            playback.reset();
-            playback.setDataSource(this, musicuri);
-            playback.prepare();
-            int epos = playback.getDuration();
-            timeseek.setProgress(0);
-            timeseek.setMax(epos);
-            endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
-            play = true;
-            playback.start();
-            new mps().start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setPlayNext(MediaPlayer playback){ //다음 곡을 있으면 재생합니다.
+    public void setPlayNext(MediaPlayer mp){ //다음 곡을 있으면 재생합니다.
         if (musics.size()-1 > pos) { //다음 곡이 있으면
             try {
-                playback.reset();
-                playback.setDataSource(MP+musics.get(++pos));
-                playback.prepare();
-                int epos = playback.getDuration();
+                mp.reset();
+                mp.setDataSource(MP+musics.get(++pos));
+                mp.prepare();
+                int epos = mp.getDuration();
                 timeseek.setProgress(0);
                 timeseek.setMax(epos);
                 endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
                 play = true;
-                playback.start();
+                mp.start();
                 new mps().start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         else { //다음 곡이 없으면
-            if (!playback.isLooping()) playback.stop();
+            if (!mp.isLooping()) mp.stop();
             else {
                 timeseek.setVisibility(View.INVISIBLE);
                 nowpos.setVisibility(View.INVISIBLE);
                 endpos.setVisibility(View.INVISIBLE);
             }
             pos = 0;
-            playback.reset();
+            mp.reset();
         }
     }
 
