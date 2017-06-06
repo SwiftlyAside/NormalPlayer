@@ -1,9 +1,7 @@
 package com.example.iveci.pmultip;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -46,8 +44,6 @@ public class Playback extends AppCompatActivity {
     TextView sinfo, ainfo, startpos, endpos;
     private String MP = getExternalMediaPath();
     private ArrayList<String> musics = new ArrayList<>();
-    private ArrayList<Meta> metas = new ArrayList<>();
-    private ArrayAdapter<String> mlist;
     private int pos = 0;
     boolean play = false;
 
@@ -89,7 +85,7 @@ public class Playback extends AppCompatActivity {
     }
 
     public String getExternalMediaPath(){ //SD카드 미디어폴더의 위치를 가져옵니다.
-        String sdPath ="";
+        String sdPath;
         String ext = Environment.getExternalStorageState();
         if(ext.equals(Environment.MEDIA_MOUNTED)){
             sdPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC)
