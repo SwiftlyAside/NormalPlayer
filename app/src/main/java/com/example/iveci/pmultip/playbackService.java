@@ -54,7 +54,6 @@ public class playbackService extends Service {
             play = true;
             playback.start();
             Bitmap bitmap = BitmapFactory.decodeFile(getAlbumart(Long.parseLong(meta.getAlbumId()),getApplicationContext()));
-            new Playback.mps().start();
         } catch (IOException e) {
             e.printStackTrace();
         }
