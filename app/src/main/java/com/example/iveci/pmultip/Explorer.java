@@ -1,8 +1,11 @@
 package com.example.iveci.pmultip;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -30,6 +33,8 @@ import java.util.ArrayList;
 * */
 
 public class Explorer extends AppCompatActivity {
+    private ServiceConnection serviceConnection;
+    private PlaybackService pService;
     ListView listView;
     ArrayList<Meta> musics;
     MusicAdapter adapter;
@@ -52,6 +57,18 @@ public class Explorer extends AppCompatActivity {
             }
         }
         else {
+            serviceConnection = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    pService = ((PlaybackService.playbackServicebinder) service).getService();
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    serviceConnection = null;
+                    pService = null;
+                }
+            };
             listView = (ListView) findViewById(R.id.mlist);
             getMeta();
             adapter = new MusicAdapter(this, musics);

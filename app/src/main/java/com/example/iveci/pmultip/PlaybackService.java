@@ -2,26 +2,18 @@ package com.example.iveci.pmultip;
 
 import android.app.Service;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.provider.MediaStore;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class playbackService extends Service {
+public class PlaybackService extends Service {
     private final IBinder ibinder = new playbackServicebinder();
     MediaPlayer playback = new MediaPlayer();
     private ArrayList<Meta> m_musics;
@@ -30,17 +22,24 @@ public class playbackService extends Service {
     boolean play = false;
 
     public class playbackServicebinder extends Binder {
-        playbackService getService() {
-            return playbackService.this;
+        PlaybackService getService() {
+            return PlaybackService.this;
         }
     }
-    public playbackService() {
+    public PlaybackService() {
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        resolver = getContentResolver();
+        playback.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (pos < m_musics.size() - 1)
+                    setPlay(m_musics.get(++pos));
+            }
+        });
         setPlay(m_musics.get(pos));
     }
 
@@ -50,27 +49,11 @@ public class playbackService extends Service {
             playback.reset();
             playback.setDataSource(this, musicuri);
             playback.prepare();
-            int epos = playback.getDuration();
             play = true;
             playback.start();
-            Bitmap bitmap = BitmapFactory.decodeFile(getAlbumart(Long.parseLong(meta.getAlbumId()),getApplicationContext()));
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getAlbumart(long albumid, Context context) {
-        Cursor album = context.getContentResolver().query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
-                MediaStore.Audio.Albums._ID + " = ?",
-                new String[]{Long.toString(albumid)},
-                null);
-        String result = null;
-        if (album.moveToFirst())
-            result = album.getString(0);
-        album.close();
-        return result;
     }
 
     @Override
