@@ -2,7 +2,9 @@ package com.example.iveci.pmultip;
 
 import android.app.Service;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -52,11 +54,24 @@ public class playbackService extends Service {
             play = true;
             playback.start();
             Bitmap bitmap = BitmapFactory.decodeFile(getAlbumart(Long.parseLong(meta.getAlbumId()),getApplicationContext()));
-            album.setImageBitmap(bitmap);
             new Playback.mps().start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getAlbumart(long albumid, Context context) {
+        Cursor album = context.getContentResolver().query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + " = ?",
+                new String[]{Long.toString(albumid)},
+                null);
+        String result = null;
+        if (album.moveToFirst())
+            result = album.getString(0);
+        album.close();
+        return result;
     }
 
     @Override
