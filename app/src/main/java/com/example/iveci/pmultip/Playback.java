@@ -80,6 +80,7 @@ public class Playback extends AppCompatActivity {
         super.onDestroy();
         play = false;
         if(playback != null) {
+            playback.stop();
             playback.release();
             playback = null;
         }
