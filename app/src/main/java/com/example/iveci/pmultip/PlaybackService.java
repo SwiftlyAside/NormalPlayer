@@ -4,13 +4,13 @@ import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
-import android.support.annotation.IntDef;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class PlaybackService extends Service {
     private ArrayList<Meta> m_musics;
     private ContentResolver resolver;
     private int pos = 0;
-    boolean play = false;
+    boolean ready = false;
 
     public class playbackServicebinder extends Binder {
         PlaybackService getService() {
@@ -40,30 +40,78 @@ public class PlaybackService extends Service {
     public void onCreate() {
         super.onCreate();
         playback.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        playback.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                ready = true;
+                mp.start();
+            }
+        });
         playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if (pos < m_musics.size() - 1)
                     setPlay(m_musics.get(++pos));
+                else ready = false;
             }
         });
         setPlay(m_musics.get(pos));
     }
 
-    public void setPlay(Meta meta) { //메타데이터로 재생합니다.
+    //메타데이터로 재생합니다.
+    public void setPlay(Meta meta) {
         try {
             Uri musicuri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, meta.getId());
-            playback.reset();
             playback.setDataSource(this, musicuri);
-            playback.prepare();
-            play = true;
-            playback.start();
+            playback.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            playback.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void getMeta() { //음악의 메타데이터를 가져옵니다.
+    //플레이어를 정지합니다. 현재 재생중인 자원은 반환합니다.
+    public void setStop() {
+        playback.stop();
+        playback.reset();
+    }
+
+    //그냥 재생합니다. 플레이어가 준비돼야만 재생합니다.
+    public void setPlay() {
+        if (ready) playback.start();
+    }
+
+    //선택한 위치에 있는 음악을 재생합니다. 플레이어 준비 여부에 관계없이 작동합니다.
+    public void setPlayAt(int position) {
+        setStop();
+        setPlay(m_musics.get(position));
+    }
+
+    //일시 정지합니다.
+    public void setPause() {
+        if (ready) playback.pause();
+    }
+
+    //이전 곡 또는 처음위치로 갑니다.
+    public void setPrev() {
+        if ((float) (playback.getCurrentPosition())/(float)(playback.getDuration()) < 0.15) {
+            if (pos > 0) pos--;
+            else pos = m_musics.size() - 1;
+            setPlay(m_musics.get(pos));
+        }
+        else playback.seekTo(0);
+    }
+
+    //다음 곡으로 갑니다.
+    public void setNext() {
+        if (pos < m_musics.size() - 1) pos++;
+        else pos = 0;
+        setPlay(m_musics.get(pos));
+    }
+
+
+    //음악의 메타데이터를 가져와 목록을 생성합니다.
+    private void getMeta() {
         m_musics = new ArrayList<>();
         String[] column = {
                 MediaStore.Audio.Media._ID,
@@ -89,18 +137,23 @@ public class PlaybackService extends Service {
         cursor.close();
     }
 
+    //음악의 목록을 변수로 복사합니다.
+    public void getList(ArrayList<Meta> musics) {
+        if (!m_musics.equals(musics)) {
+            musics.clear();
+            musics.addAll(m_musics);
+        }
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        pos = intent.getIntExtra("pos", 0);
-        m_musics = (ArrayList<Meta>) intent.getSerializableExtra("playlist");
         return ibinder;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        play = false;
+        ready = false;
         if(playback != null) {
             playback.stop();
             playback.release();

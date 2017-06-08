@@ -193,10 +193,10 @@ public class Playback extends AppCompatActivity {
                 }
                 else{ //처음 위치로 돌아가기 전에
                     if (playback.isPlaying()) { //재생 중이었다면 처음위치에서 재생을 재개한다.
-/*                        play = false;
+/*                        ready = false;
                         playback.pause();*/
                         playback.seekTo(0);
-/*                        play = true;
+/*                        ready = true;
                         playback.start();
                         new mps().start();*/
                     }
