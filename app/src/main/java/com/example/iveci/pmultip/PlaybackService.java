@@ -18,7 +18,8 @@ import java.util.ArrayList;
 public class PlaybackService extends Service {
     private final IBinder ibinder = new playbackServicebinder();
     MediaPlayer playback = new MediaPlayer();
-    private ArrayList<Meta> m_musics;
+    private ArrayList<Long> m_musics = new ArrayList<>();
+    private Meta meta;
     private ContentResolver resolver;
     private int pos = 0;
     boolean ready = false;
@@ -29,11 +30,6 @@ public class PlaybackService extends Service {
         }
     }
     public PlaybackService() {
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -50,15 +46,13 @@ public class PlaybackService extends Service {
         playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if (pos < m_musics.size() - 1)
-                    setPlay(m_musics.get(++pos));
-                else ready = false;
+                ready = false;
             }
         });
     }
 
     //메타데이터로 재생합니다.
-    public void setPlay(Meta meta) {
+    public void Play() {
         try {
             Uri musicuri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, meta.getId());
             playback.setDataSource(this, musicuri);
@@ -81,9 +75,10 @@ public class PlaybackService extends Service {
     }
 
     //선택한 위치에 있는 음악을 재생합니다. 플레이어 준비 여부에 관계없이 작동합니다.
-    public void setPlayAt(int position) {
+    public void setPlay(int position) {
+        queryMusic(position);
         setStop();
-        setPlay(m_musics.get(position));
+        Play();
     }
 
     //일시 정지합니다.
@@ -96,7 +91,7 @@ public class PlaybackService extends Service {
         if ((float) (playback.getCurrentPosition())/(float)(playback.getDuration()) < 0.15) {
             if (pos > 0) pos--;
             else pos = m_musics.size() - 1;
-            setPlay(m_musics.get(pos));
+            setPlay(pos);
         }
         else playback.seekTo(0);
     }
@@ -105,42 +100,36 @@ public class PlaybackService extends Service {
     public void setNext() {
         if (pos < m_musics.size() - 1) pos++;
         else pos = 0;
-        setPlay(m_musics.get(pos));
+        setPlay(pos);
     }
 
 
-    //음악의 메타데이터를 가져와 목록을 생성합니다.
-    private void getMeta() {
-        m_musics = new ArrayList<>();
-        String[] column = {
+    //재생할 음악의 메타데이터를 쿼리합니다.
+    private void queryMusic(int position) {
+        long musicid = m_musics.get(position);
+        String[] proj = {
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ALBUM,
                 MediaStore.Audio.Media.ARTIST,
                 MediaStore.Audio.Media.DURATION};
-
+        String select = MediaStore.Audio.Media._ID + " = ?";
+        String[] args = {String.valueOf(musicid)};
         Cursor cursor = getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, column, null, null, null);
-
-        while (cursor.moveToNext()) {
-            Meta meta = new Meta();
-            meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
-            meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
-            meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-            meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-            meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-            meta.setDuration(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
-            m_musics.add(meta);
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, proj, select, args, null);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            meta = Meta.setByCursor(cursor);
         }
         cursor.close();
     }
 
     //음악의 목록을 변수로 복사합니다.
-    public void getList(ArrayList<Meta> musics) {
+    public void getList(ArrayList<Long> musics) {
         if (!m_musics.equals(musics)) {
-            musics.clear();
-            musics.addAll(m_musics);
+            m_musics.clear();
+            m_musics.addAll(musics);
         }
     }
 

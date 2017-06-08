@@ -1,6 +1,7 @@
 package com.example.iveci.pmultip;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -15,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -51,22 +54,53 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         return new MusicViewHolder(v);
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-
-    //Cursor로 받은 음악 정보를 ViewHolder에 하나씩 추가합니다.
+    //Cursor로 받은 음악 정보를 ViewHolder에 추가합니다.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
-        Meta meta = new Meta();
-        meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
-        meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
-        meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-        meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-        meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-        meta.setDuration(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+        Meta meta = Meta.setByCursor(cursor);
         ((MusicViewHolder) viewHolder).setItem(meta, cursor.getPosition());
+    }
+
+    public ArrayList<Long> getMusicIds() {
+        int count = getItemCount();
+        ArrayList<Long> musicids =  new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            musicids.add(getItemId(i));
+        }
+        return musicids;
+    }
+
+    public class MusicViewHolder extends RecyclerView.ViewHolder {
+        private final Uri uri = Uri.parse("content://media/external/audio/albumart/");
+        private TextView song, artist;
+        private ImageView aAlbumart;
+        Meta meta;
+        int viewpos;
+
+        MusicViewHolder(View itemView) {
+            super(itemView);
+            song = (TextView) itemView.findViewById(R.id.tsongname);
+            artist = (TextView) itemView.findViewById(R.id.tartist);
+            aAlbumart = (ImageView) itemView.findViewById(R.id.listalbart);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MusicApplication.getInstance().getManager().playList(getMusicIds());
+                    MusicApplication.getInstance().getManager().play(viewpos);
+                }
+            });
+        }
+
+        public void setItem(Meta m_meta, int position) {
+            meta = m_meta;
+            viewpos = position;
+            song.setText(m_meta.getTitle());
+            artist.setText(m_meta.getArtist());
+            Uri albumart = ContentUris.withAppendedId(uri, Long.parseLong(m_meta.getAlbumId()));
+            Picasso.with(itemView.getContext())
+                    .load(albumart)
+                    .error(R.drawable.nothing)
+                    .into(aAlbumart);
+        }
     }
 }

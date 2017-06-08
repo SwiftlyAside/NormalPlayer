@@ -1,5 +1,8 @@
 package com.example.iveci.pmultip;
 
+import android.database.Cursor;
+import android.provider.MediaStore;
+
 import java.io.Serializable;
 
 /**
@@ -14,19 +17,16 @@ public class Meta implements Serializable {
     private String artist;
     private String duration;
 
-    public Meta() {
+    public static Meta setByCursor(Cursor cursor) {
+        Meta meta = new Meta();
+        meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
+        meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+        meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+        meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+        meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+        meta.setDuration(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+        return meta;
     }
-
-    public Meta(String id, String albumId, String title, String album, String artist, String duration) {
-        this.id = id;
-        this.albumId = albumId;
-        this.title = title;
-        this.album = album;
-        this.artist = artist;
-        this.duration = duration;
-    }
-
-
 
     public String getId() {
         return id;
