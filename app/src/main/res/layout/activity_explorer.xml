@@ -16,7 +16,7 @@
         android:ems="10"
         android:hint="Search" />
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/mlist"
         android:textFilterEnabled="true"
         android:layout_width="match_parent"

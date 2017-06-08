@@ -6,11 +6,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import java.util.ArrayList;
 
 /**
  * Created by iveci on 2017-06-07.
- * 사용하지 않을 가능성 있음. 서비스 설계 실험용.
+ * PlaybackService와 다른 Activity간 매개역할을 수행합니다.
  */
 
 public class PlayManager {
