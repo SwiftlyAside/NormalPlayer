@@ -20,7 +20,6 @@ public class PlaybackService extends Service {
     MediaPlayer playback = new MediaPlayer();
     private ArrayList<Long> m_musics = new ArrayList<>();
     private Meta meta;
-    private ContentResolver resolver;
     private int pos = 0;
     boolean ready = false;
 
@@ -46,7 +45,10 @@ public class PlaybackService extends Service {
         playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                ready = false;
+                if (pos < m_musics.size() - 1) {
+                    setPlay(++pos);
+                }
+                else ready = false;
             }
         });
     }

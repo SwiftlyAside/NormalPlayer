@@ -1,5 +1,5 @@
 package com.example.iveci.pmultip;
-import android.content.ContentResolver;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -252,9 +252,6 @@ public class Playback extends AppCompatActivity {
                 *   다음 곡으로만 간다
                 * 없으면 끝낸다
                 * */
-                if (pos < m_musics.size() - 1)
-                    setPlay(m_musics.get(++pos));
-                else finish();
                 break;
             }
             case R.id.repeat :{
