@@ -101,7 +101,7 @@ public class Explorer extends AppCompatActivity {
             meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
             meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
             meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-//            meta.setMtype(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.CONTENT_TYPE))); //버그있음
+//            meta.setMtype(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.CONTENT_TYPE))); //컬럼인식불가능.
             musics.add(meta);
         }
         cursor.close();

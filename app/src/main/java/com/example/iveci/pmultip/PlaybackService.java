@@ -9,6 +9,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.support.annotation.IntDef;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +28,11 @@ public class PlaybackService extends Service {
         }
     }
     public PlaybackService() {
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, @IntDef(value = {Service.START_FLAG_REDELIVERY, Service.START_FLAG_RETRY}, flag = true) int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
