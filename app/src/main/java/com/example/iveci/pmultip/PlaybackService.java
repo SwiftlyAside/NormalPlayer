@@ -55,7 +55,6 @@ public class PlaybackService extends Service {
                 else ready = false;
             }
         });
-        setPlay(m_musics.get(pos));
     }
 
     //메타데이터로 재생합니다.
