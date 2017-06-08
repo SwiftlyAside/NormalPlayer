@@ -23,14 +23,13 @@ import java.util.ArrayList;
 /*
 * Playback
 * Description:
-* 이 Activity는 음악을 재생합니다.
+* 음악재생 UI입니다.
 *
 * Functions:
 * 음악 재생/일시정지
 * 트래킹바로 위치변경
 * 이전/다음 곡 전환
 *
-* Used other libraries:
 *
 * ETC:
 * 이 프로그램에서 상단바는 쓰지 않음.

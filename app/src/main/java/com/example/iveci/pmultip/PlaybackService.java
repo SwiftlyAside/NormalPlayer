@@ -15,6 +15,14 @@ import android.provider.MediaStore;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/*
+* PlaybackService
+*
+* Description:
+* 음악을 재생하는 기본 서비스입니다.
+*
+* */
+
 public class PlaybackService extends Service {
     private final IBinder ibinder = new playbackServicebinder();
     MediaPlayer playback = new MediaPlayer();

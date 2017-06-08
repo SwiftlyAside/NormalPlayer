@@ -18,6 +18,10 @@ import java.util.ArrayList;
 /**
  * Created by iveci on 2017-06-05.
  *
+ * MusicAdapter
+ *
+ * Description:
+ * RecyclerView의 어댑터입니다. Cursor를 이용해 리스트정보를 주고받습니다.
  * 이 Adapter는 CursorRecyclerViewAdapter를 이용하였습니다.
  *
  *

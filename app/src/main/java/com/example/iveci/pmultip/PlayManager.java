@@ -10,8 +10,9 @@ import java.util.ArrayList;
 
 
 /**
- * Created by iveci on 2017-06-07.
- * PlaybackService와 다른 Activity간 매개역할을 수행합니다.
+ * PlayManager
+ * Description:
+ * PlaybackService와 다른 Activity간 중계역할을 수행합니다.
  */
 
 public class PlayManager {
