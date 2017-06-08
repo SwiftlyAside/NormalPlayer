@@ -43,7 +43,6 @@ public class Playback extends AppCompatActivity {
     SeekBar timeseek;
     TextView sinfo, ainfo, nowpos, endpos;
     private ArrayList<Meta> m_musics;
-    private ContentResolver resolver;
     private int pos = 0;
     boolean play = false;
 
@@ -101,7 +100,6 @@ public class Playback extends AppCompatActivity {
         Intent intent = getIntent();
         pos = intent.getIntExtra("pos", 0);
         m_musics = (ArrayList<Meta>) intent.getSerializableExtra("playlist");
-        resolver = getContentResolver();
 
         setPlay(m_musics.get(pos));
         new mps().start();
