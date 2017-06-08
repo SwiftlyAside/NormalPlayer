@@ -2,10 +2,13 @@ package com.example.iveci.pmultip;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,27 +22,33 @@ import java.util.ArrayList;
 
 /**
  * Created by iveci on 2017-06-05.
- * 정렬기능
  *
+ * 이 Adapter는 CursorRecyclerViewAdapter를 이용하였습니다.
+ *
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-public class MusicAdapter extends BaseAdapter {
-    Context context;
-    ArrayList<Meta> metaArrayList;
+public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
 
-    public MusicAdapter(Context context, ArrayList<Meta> metaArrayList) {
-        this.context = context;
-        this.metaArrayList = metaArrayList;
+    public MusicAdapter(Context context, Cursor cursor) {
+        super(context, cursor);
     }
 
     @Override
-    public int getCount() {
-        return metaArrayList.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return position;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.music, parent, false);
+        return new MusicViewHolder(v);
     }
 
     @Override
@@ -47,62 +56,17 @@ public class MusicAdapter extends BaseAdapter {
         return position;
     }
 
+
+    //Cursor로 받은 음악 정보를 ViewHolder에 하나씩 추가합니다.
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.music, parent, false);
-        }
-        TextView song = (TextView) convertView.findViewById(R.id.tsongname);
-        TextView artist = (TextView) convertView.findViewById(R.id.tartist);
-        song.setText(metaArrayList.get(position).getTitle());
-        artist.setText(metaArrayList.get(position).getArtist());
-
-        ImageView aAlbumart = (ImageView) convertView.findViewById(R.id.listalbart);
-        Bitmap bAlbumart = getAlbumart(context, Integer.parseInt(metaArrayList.get(position).getAlbumId()), 80);
-        aAlbumart.setImageBitmap(bAlbumart);
-
-        return convertView;
-    }
-
-    private static final BitmapFactory.Options opt = new BitmapFactory.Options();
-
-    private Bitmap getAlbumart(Context context, int albumid, int imgsize) { //앨범아트를 불러옵니다. 사이즈가 맞지 않는경우 이 안에서 스케일링합니다.
-        ContentResolver resolver = context.getContentResolver();
-        Uri uri = Uri.parse("content://media/external/audio/albumart/" + albumid);
-        if(uri != null) {
-            ParcelFileDescriptor fileDescriptor = null;
-            try {
-                fileDescriptor = resolver.openFileDescriptor(uri, "r");
-                opt.inJustDecodeBounds = true;
-                BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(), null, opt);
-                int scale = 0;
-                if(opt.outHeight > imgsize || opt.outWidth > imgsize) {
-                /* 받아온 이미지의 크기가 맞지 않는 경우 스케일링. 함수 매우 복잡.
-                기본스케일을 이미지의 길쭉한 쪽으로 나눈 값의 로그를 구하고
-                그걸 또 로그0.5로 나누고 그거를 지수로 삼은 2의 계승?을 구해서 정수로 캐스팅하는데
-                왜 이렇게 하는지는 난 모르겠다. 그냥 이렇게 하면 된다고 해서 쓰는것이다. */
-                    scale = (int) Math.pow(2, (int) Math.round(Math.log(imgsize / (double) Math.max(opt.outHeight, opt.outWidth)) / Math.log(0.5)));
-                }
-                opt.inJustDecodeBounds = false;
-                opt.inSampleSize = scale;
-                Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor.getFileDescriptor(), null, opt);
-                if(bitmap != null && (opt.outHeight != imgsize || opt.outWidth != imgsize)) { //스케일링
-                    Bitmap temp = Bitmap.createScaledBitmap(bitmap, imgsize, imgsize, true);
-                    bitmap.recycle();
-                    bitmap = temp;
-                }
-                return bitmap;
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if(fileDescriptor != null) fileDescriptor.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return null;
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
+        Meta meta = new Meta();
+        meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
+        meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+        meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+        meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+        meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+        meta.setDuration(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+        ((MusicViewHolder) viewHolder).setItem(meta, cursor.getPosition());
     }
 }

@@ -3,11 +3,18 @@ package com.example.iveci.pmultip;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -29,9 +36,10 @@ import java.util.ArrayList;
 * */
 
 public class Explorer extends AppCompatActivity {
-    ListView listView;
-    ArrayList<Meta> musics;
+    private final static int LOAD = 0x907;
+    RecyclerView rView;
     MusicAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,31 +59,52 @@ public class Explorer extends AppCompatActivity {
             }
         }
         else {
-            listView = (ListView) findViewById(R.id.mlist);
             getMeta();
-            adapter = new MusicAdapter(this, musics);
-            listView.setAdapter(adapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(Explorer.this, Playback.class);
-                    intent.putExtra("pos", position);
-                    intent.putExtra("playlist", musics);
-                    startActivity(intent);
-                }
-            });
+            rView = (RecyclerView) findViewById(R.id.mlist);
+            adapter = new MusicAdapter(this, null);
+            rView.setAdapter(adapter);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            rView.setLayoutManager(layoutManager);
         }
 
     }
 
-    public void getMeta() { //음악의 메타데이터를 가져옵니다.
+    public void getMeta() { //로컬 미디어 데이터베이스에서 음악의 메타데이터를 가져옵니다. 어댑터로 전송.
+        getSupportLoaderManager().initLoader(LOAD, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+            @Override
+            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                String[] proj = {
+                        MediaStore.Audio.Media._ID,     MediaStore.Audio.Media.ALBUM_ID,
+                        MediaStore.Audio.Media.TITLE,   MediaStore.Audio.Media.ALBUM,
+                        MediaStore.Audio.Media.ARTIST,  MediaStore.Audio.Media.DURATION};
+                String select = MediaStore.Audio.Media.IS_MUSIC + " = 1";
+                String order  = MediaStore.Audio.Media.TITLE + " COLLATE LOCALIZED ASC";
+                return new CursorLoader(getApplicationContext(),
+                        uri, proj, select, null, order);
+            }
+
+            @Override
+            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                adapter.swapCursor(data);
+            }
+
+            @Override
+            public void onLoaderReset(Loader<Cursor> loader) {
+                adapter.swapCursor(null);
+            }
+        });
+    }
+
+/*    public void getMeta() { //음악의 메타데이터를 가져옵니다. 전부 Cursor의 값으로 세팅.
         musics = new ArrayList<>();
-        String[] column = {MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
+        String[] proj = {MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
                            MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
                            MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DURATION};
 
         Cursor cursor = getContentResolver().query(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, column, null, null, null);
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, proj, null, null, null);
 
         while (cursor.moveToNext()) {
             Meta meta = new Meta();
@@ -88,5 +117,5 @@ public class Explorer extends AppCompatActivity {
             musics.add(meta);
         }
         cursor.close();
-    }
+    }*/
 }
