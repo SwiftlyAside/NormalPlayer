@@ -12,18 +12,18 @@ public class Meta implements Serializable {
     private String title;
     private String album;
     private String artist;
-    private String mtype;
+    private String duration;
 
     public Meta() {
     }
 
-    public Meta(String id, String albumId, String title, String album, String artist, String mtype) {
+    public Meta(String id, String albumId, String title, String album, String artist, String duration) {
         this.id = id;
         this.albumId = albumId;
         this.title = title;
         this.album = album;
         this.artist = artist;
-        this.mtype = mtype;
+        this.duration = duration;
     }
 
 
@@ -68,12 +68,12 @@ public class Meta implements Serializable {
         this.artist = artist;
     }
 
-    public String getMtype() {
-        return mtype;
+    public String getDuration() {
+        return duration;
     }
 
-    public void setMtype(String mtype) {
-        this.mtype = mtype;
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class Meta implements Serializable {
                 ", title='" + title + '\'' +
                 ", album='" + album + '\'' +
                 ", artist='" + artist + '\'' +
-                ", mtype='" + mtype + '\'' +
+                ", duration='" + duration + '\'' +
                 '}';
     }
 }

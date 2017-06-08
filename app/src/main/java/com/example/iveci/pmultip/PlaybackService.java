@@ -3,6 +3,7 @@ package com.example.iveci.pmultip;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -60,6 +61,32 @@ public class PlaybackService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void getMeta() { //음악의 메타데이터를 가져옵니다.
+        m_musics = new ArrayList<>();
+        String[] column = {
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.ALBUM_ID,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ALBUM,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.DURATION};
+
+        Cursor cursor = getContentResolver().query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, column, null, null, null);
+
+        while (cursor.moveToNext()) {
+            Meta meta = new Meta();
+            meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
+            meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+            meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+            meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+            meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+            meta.setDuration(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))); //컬럼인식불가능.
+            m_musics.add(meta);
+        }
+        cursor.close();
     }
 
     @Override

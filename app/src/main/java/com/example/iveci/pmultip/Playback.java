@@ -10,7 +10,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -60,8 +60,7 @@ public class Playback extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int spsc = spos%60000;
-                            nowpos.setText(spos/60000+":"+spsc/10000+""+(spsc%10000)/1000);
+                            nowpos.setText(DateFormat.format("mm:ss", spos));
                         }
                     });
                 } catch (InterruptedException e) {
@@ -147,7 +146,7 @@ public class Playback extends AppCompatActivity {
             int epos = playback.getDuration();
             timeseek.setProgress(0);
             timeseek.setMax(epos);
-            endpos.setText(epos/60000+":"+(epos%60000)/10000+""+((epos%60000)%10000)/1000);
+            endpos.setText(DateFormat.format("mm:ss", Long.parseLong(meta.getDuration())));
             play = true;
             playback.start();
             timeseek.setVisibility(View.VISIBLE);
