@@ -89,9 +89,6 @@ public class PlaybackService extends Service {
             playback.setDataSource(this, musicuri);
             playback.setAudioStreamType(AudioManager.STREAM_MUSIC);
             playback.prepareAsync();
-            Intent pLintent = new Intent(this, Playback.class);
-            pLintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(pLintent);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,6 +113,7 @@ public class PlaybackService extends Service {
         queryMusic(position);
         setStop();
         Play();
+        sendBroadcast(new Intent(CHANGE));
     }
 
     //일시 정지합니다.

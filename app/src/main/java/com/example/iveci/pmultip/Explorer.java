@@ -1,8 +1,14 @@
 package com.example.iveci.pmultip;
 
+import android.content.BroadcastReceiver;
+import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
@@ -13,8 +19,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 
 /*
@@ -32,8 +44,25 @@ import android.widget.Toast;
 
 public class Explorer extends AppCompatActivity {
     private final static int LOAD = 0x907;
+    ImageView album;
+    ImageButton pp;
+    TextView songname;
     RecyclerView rView;
     MusicAdapter adapter;
+
+    //Service로부터 메시지를 받습니다.
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            refresh();
+        }
+    };
+
+    public void registerBroadCast() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PlaybackService.CHANGE);
+        registerReceiver(broadcastReceiver, filter);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +84,59 @@ public class Explorer extends AppCompatActivity {
         }
         else {
             getMeta();
+            album = (ImageView) findViewById(R.id.imalbumart);
+            songname = (TextView) findViewById(R.id.tvmsongn);
+            pp = (ImageButton) findViewById(R.id.implay);
             rView = (RecyclerView) findViewById(R.id.mlist);
             adapter = new MusicAdapter(this, null);
             rView.setAdapter(adapter);
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             rView.setLayoutManager(layoutManager);
+            registerBroadCast();
+            refresh();
         }
 
     }
 
-    public void onClick(View v) {
+    //UI를 새로고칩니다.
+    public void refresh() {
+        if (MusicApplication.getInstance().getManager().isReady()) {
+            pp.setImageResource(R.drawable.pause);
+        }
+        else {
+            pp.setImageResource(R.drawable.play);
 
+        }
+        Meta meta = MusicApplication.getInstance().getManager().getMeta();
+        if (meta != null) {
+            Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.getAlbumId()));
+            Picasso.with(getApplicationContext()).load(albumart).error(R.drawable.nothing).into(album);
+            songname.setText(meta.getTitle());
+        }
+        else {
+            album.setImageResource(R.drawable.nothing);
+            songname.setText("음악을 선택하면 재생합니다.");
+        }
+    }
+
+    public void onClick(View v) {
+        switch (v.getId()){
+            //플레이어 Activity 보이기
+            case R.id.smallplay :{
+                break;
+            }
+            //재생, 일시정지
+            case R.id.implay :{
+                MusicApplication.getInstance().getManager().toggle();
+                break;
+            }
+            //다음 곡
+            case R.id.imnext :{
+                MusicApplication.getInstance().getManager().next();
+                break;
+            }
+        }
     }
 
     public void getMeta() { //로컬 미디어 데이터베이스에서 음악의 메타데이터를 가져옵니다. 어댑터로 전송.
@@ -94,5 +164,11 @@ public class Explorer extends AppCompatActivity {
                 adapter.swapCursor(null);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 }

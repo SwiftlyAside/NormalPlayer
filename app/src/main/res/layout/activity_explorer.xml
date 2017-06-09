@@ -16,6 +16,7 @@
         android:layout_weight="1"/>
 
     <LinearLayout
+        android:id="@+id/smallplay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="7"
@@ -24,8 +25,8 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/imageView"
-            android:layout_margin="5dp"
+            android:id="@+id/imalbumart"
+            android:layout_margin="10dp"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:scaleType="fitXY"
@@ -34,20 +35,20 @@
         <TextView
             android:id="@+id/tvmsongn"
             android:layout_margin="5dp"
-            android:textSize="14sp"
-            android:textColor="#000000"
+            android:textSize="15sp"
+            android:textColor="#335555"
             android:maxLines="1"
             android:gravity="center_vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="TextView" />
+            android:text="음악을 선택하면 재생합니다." />
 
         <ImageButton
             android:id="@+id/implay"
             android:onClick="onClick"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="?attr/selectableItemBackground"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/play" />
@@ -55,8 +56,8 @@
         <ImageButton
             android:id="@+id/imnext"
             android:onClick="onClick"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="?attr/selectableItemBackground"
             android:scaleType="fitXY"
             app:srcCompat="@drawable/next" />
