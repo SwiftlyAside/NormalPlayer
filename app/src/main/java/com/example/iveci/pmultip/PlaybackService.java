@@ -77,13 +77,21 @@ public class PlaybackService extends Service {
         return meta;
     }
 
-    //메타데이터로 재생합니다.
-    public void Play() {
+    //현재 재생위치를 반환합니다.
+    public int getCurrent() {
+        return playback.getCurrentPosition();
+    }
+
+    //메타데이터로 재생합니다. (서비스 내에서만 사용함)
+    private void Play() {
         try {
             Uri musicuri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, meta.getId());
             playback.setDataSource(this, musicuri);
             playback.setAudioStreamType(AudioManager.STREAM_MUSIC);
             playback.prepareAsync();
+            Intent pLintent = new Intent(this, Playback.class);
+            pLintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(pLintent);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,6 +124,11 @@ public class PlaybackService extends Service {
             playback.pause();
             sendBroadcast(new Intent(CHANGE));
         }
+    }
+
+    //트래킹한 위치로 이동합니다.
+    public void seekTo(int position) {
+        playback.seekTo(position);
     }
 
     //이전 곡 또는 처음위치로 갑니다.

@@ -51,6 +51,13 @@ public class PlayManager {
         return pService != null && pService.isReady();
     }
 
+    //현재 위치를 반환합니다.
+    public int getCurrent() {
+        if (pService != null) return pService.getCurrent();
+        return 0;
+    }
+
+    //음악목록을 불러옵니다.
     public void playList(ArrayList<Long> musics) {
         if (pService != null) pService.getList(musics);
     }
@@ -59,12 +66,9 @@ public class PlayManager {
         if (pService != null) pService.setPlay(position);
     }
 
-    public void play() {
-        if (pService != null) pService.setPlay();
-    }
-
-    public void pause() {
-        if (pService != null) pService.setPause();
+    //트래킹한 위치로 이동합니다.
+    public void seekTo(int position) {
+        if (pService != null) pService.seekTo(position);
     }
 
     public void next() {

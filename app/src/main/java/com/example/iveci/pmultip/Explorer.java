@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Toast;
 
 
@@ -61,6 +62,10 @@ public class Explorer extends AppCompatActivity {
             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             rView.setLayoutManager(layoutManager);
         }
+
+    }
+
+    public void onClick(View v) {
 
     }
 

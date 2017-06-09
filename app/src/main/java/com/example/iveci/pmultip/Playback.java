@@ -5,12 +5,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -22,8 +17,6 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.util.ArrayList;
 
 /*
 * Playback
@@ -41,7 +34,6 @@ import java.util.ArrayList;
 * 
 * */
 public class Playback extends AppCompatActivity {
-    MediaPlayer playback = new MediaPlayer();
     ImageView album;
     ImageButton iplay;
     SeekBar timeseek;
@@ -66,8 +58,8 @@ public class Playback extends AppCompatActivity {
     class mps extends Thread {
         @Override
         public void run() {
-            while(play){
-                final int spos = playback.getCurrentPosition();
+            while(MusicApplication.getInstance().getManager().isReady()){
+                final int spos = MusicApplication.getInstance().getManager().getCurrent();
                 timeseek.setProgress(spos);
                 try {
                     sleep(300); //탐색바 갱신주기(ms단위). (100~1000) 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
@@ -98,14 +90,13 @@ public class Playback extends AppCompatActivity {
         nowpos   = (TextView) findViewById(R.id.snowpos);
         endpos   = (TextView) findViewById(R.id.sendpos);
         registerBroadCast();
+        refresh();
         sinfo.setSelected(true);
         ainfo.setSelected(true);
 
         timeseek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (seekBar.getMax() == progress)
-                    play = false;
             }
 
             @Override
@@ -114,7 +105,7 @@ public class Playback extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                playback.seekTo(seekBar.getProgress());
+                MusicApplication.getInstance().getManager().seekTo(seekBar.getProgress());
             }
         });
     }
@@ -123,10 +114,11 @@ public class Playback extends AppCompatActivity {
     public void refresh() {
         if (MusicApplication.getInstance().getManager().isReady()) {
             iplay.setImageResource(R.drawable.pause);
-            new mps().start();
         }
-        else
+        else {
             iplay.setImageResource(R.drawable.play);
+
+        }
         Meta meta = MusicApplication.getInstance().getManager().getMeta();
         if (meta != null) {
             Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.getAlbumId()));
@@ -137,45 +129,30 @@ public class Playback extends AppCompatActivity {
             timeseek.setVisibility(View.VISIBLE);
             timeseek.setProgress(0);
             timeseek.setMax(epos);
+            nowpos.setVisibility(View.VISIBLE);
+            endpos.setVisibility(View.VISIBLE);
             endpos.setText(DateFormat.format("mm:ss", epos));
+            new mps().start();
         }
-        else {
-            album.setImageResource(R.drawable.nothing);
-            sinfo.setText("");
-            ainfo.setText("");
-            timeseek.setVisibility(View.INVISIBLE);
-        }
+        else finish();
     }
 
     //플레이어 제어
 
     public void onClick(View v){
         switch (v.getId()){
+            //이전 곡
             case R.id.bprev :{
-                /*
-                * 이전 버튼입니다.
-                * */
                 MusicApplication.getInstance().getManager().prev();
                 break;
             }
+            //재생, 일시정지
             case R.id.bstst :{
-                /*
-                재생/일시정지 버튼입니다.
-
-                고려해야 할 사항.
-
-                플레이어 준비가 안된 상태일때 (추가필요)
-                준비는 되어있으나 플레이 안하고 있을때
-                일시정지일때
-                플레이중일때
-                 */
                 MusicApplication.getInstance().getManager().toggle();
                 break;
             }
+            //다음 곡
             case R.id.bnext :{
-                /*
-                * 다음 버튼입니다.
-                * */
                 MusicApplication.getInstance().getManager().next();
                 break;
             }

@@ -7,19 +7,61 @@
     android:layout_height="match_parent"
     tools:context="com.example.iveci.pmultip.Explorer">
 
-    <EditText
-        android:id="@+id/esearch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:outlineProvider="paddedBounds"
-        android:ems="10"
-        android:hint="Search" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/mlist"
         android:textFilterEnabled="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="10"/>
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="7"
+        android:background="@drawable/round"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_margin="5dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/nothing" />
+
+        <TextView
+            android:id="@+id/tvmsongn"
+            android:layout_margin="5dp"
+            android:textSize="14sp"
+            android:textColor="#000000"
+            android:maxLines="1"
+            android:gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="TextView" />
+
+        <ImageButton
+            android:id="@+id/implay"
+            android:onClick="onClick"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/play" />
+
+        <ImageButton
+            android:id="@+id/imnext"
+            android:onClick="onClick"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="?attr/selectableItemBackground"
+            android:scaleType="fitXY"
+            app:srcCompat="@drawable/next" />
+
+    </LinearLayout>
+
+
 </LinearLayout>

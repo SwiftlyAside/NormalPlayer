@@ -50,11 +50,11 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         return new MusicViewHolder(v);
     }
 
-    //Cursor로 받은 음악 정보를 ViewHolder에 추가합니다.
+    //ListView 정보를 갱신합니다.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
         Meta meta = Meta.setByCursor(cursor);
-        ((MusicViewHolder) viewHolder).setItem(meta, cursor.getPosition());
+        ((MusicViewHolder) viewHolder).setItem(meta, cursor.getPosition(), false);
     }
 
     public ArrayList<Long> getMusicIds() {
@@ -87,7 +87,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
             });
         }
 
-        public void setItem(Meta m_meta, int position) {
+        public void setItem(Meta m_meta, int position, boolean playing) {
             meta = m_meta;
             viewpos = position;
             song.setText(m_meta.getTitle());
