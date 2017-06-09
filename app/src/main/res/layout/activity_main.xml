@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DDFDFA"
+    android:background="#EEFDFA"
     android:orientation="vertical"
     android:gravity="center"
     tools:context="com.example.iveci.pmultip.Playback">
 
     <ImageView
         android:id="@+id/ialbumart"
-        android:layout_margin="25dp"
+        android:layout_margin="20dp"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:src="@drawable/nothing"/>
@@ -32,8 +32,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
             android:gravity="left"
-            android:layout_weight="1"
-            android:text="0:00" />
+            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/sendpos"
@@ -41,8 +40,7 @@
             android:layout_height="wrap_content"
             android:paddingRight="10dp"
             android:gravity="right"
-            android:layout_weight="1"
-            android:text="0:00" />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
@@ -50,32 +48,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
+        <ImageButton
             android:id="@+id/shuffle"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:text="shuffle" />
+            android:layout_weight="1" />
 
 
-        <Button
+        <ImageButton
             android:id="@+id/repeat"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:text="repeat"/>
+            android:layout_weight="1"/>
     </LinearLayout>
 
 
     <TextView
         android:id="@+id/songinfo"
-        android:textSize="22sp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:textSize="20sp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:scrollHorizontally="true"
         android:focusable="true"
         android:maxLines="1"
@@ -86,7 +82,7 @@
 
     <TextView
         android:id="@+id/ars_albinfo"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:scrollHorizontally="true"
@@ -109,7 +105,7 @@
             android:layout_height="75dp"
             android:layout_margin="10dp"
             android:src="@drawable/back"
-            android:scaleType="fitCenter"
+            android:scaleType="fitXY"
             android:background="?attr/selectableItemBackground"
             android:onClick="onClick"
             android:text="Prev" />
@@ -120,7 +116,7 @@
             android:layout_height="75dp"
             android:layout_margin="10dp"
             android:src="@drawable/pause"
-            android:scaleType="fitCenter"
+            android:scaleType="fitXY"
             android:background="?attr/selectableItemBackground"
             android:onClick="onClick"
             />
@@ -131,7 +127,7 @@
             android:layout_height="75dp"
             android:layout_margin="10dp"
             android:src="@drawable/next"
-            android:scaleType="fitCenter"
+            android:scaleType="fitXY"
             android:background="?attr/selectableItemBackground"
             android:onClick="onClick"
             android:text="Next" />

@@ -64,6 +64,13 @@ public class PlaybackService extends Service {
                 }
             }
         });
+        playback.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                ready = false;
+                return false;
+            }
+        });
     }
 
     //재생여부를 반환합니다.
