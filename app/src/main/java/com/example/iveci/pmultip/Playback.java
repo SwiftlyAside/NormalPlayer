@@ -38,7 +38,6 @@ public class Playback extends AppCompatActivity {
     ImageButton iplay;
     SeekBar timeseek;
     TextView sinfo, ainfo, nowpos, endpos;
-    boolean play = false;
 
     //Service로부터 메시지를 받습니다.
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -126,11 +125,8 @@ public class Playback extends AppCompatActivity {
             sinfo.setText(meta.getTitle());
             ainfo.setText(meta.getArtist() + " - " + meta.getAlbum());
             int epos = meta.getDuration();
-            timeseek.setVisibility(View.VISIBLE);
-            timeseek.setProgress(0);
+            timeseek.setProgress(MusicApplication.getInstance().getManager().getCurrent());
             timeseek.setMax(epos);
-            nowpos.setVisibility(View.VISIBLE);
-            endpos.setVisibility(View.VISIBLE);
             endpos.setText(DateFormat.format("mm:ss", epos));
             new mps().start();
         }

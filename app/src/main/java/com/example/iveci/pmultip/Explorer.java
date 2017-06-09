@@ -122,6 +122,8 @@ public class Explorer extends AppCompatActivity {
         switch (v.getId()){
             //플레이어 Activity 보이기
             case R.id.smallplay :{
+                Intent intent = new Intent(Explorer.this, Playback.class);
+                startActivity(intent);
                 break;
             }
             //재생, 일시정지

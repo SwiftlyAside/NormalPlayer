@@ -29,7 +29,7 @@ public class PlaybackService extends Service {
     private Meta meta;
     private int pos = 0;
     private boolean ready = false;
-    public static String READY = "READY", CHANGE = "CHANGED";
+    public static String CHANGE = "CHANGED";
 
     public class playbackServicebinder extends Binder {
         PlaybackService getService() {
@@ -49,7 +49,7 @@ public class PlaybackService extends Service {
             public void onPrepared(MediaPlayer mp) {
                 ready = true;
                 mp.start();
-                sendBroadcast(new Intent(READY));
+                sendBroadcast(new Intent(CHANGE));
             }
         });
         playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
