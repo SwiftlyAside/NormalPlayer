@@ -1,7 +1,6 @@
 package com.example.iveci.pmultip;
 
 import android.app.Service;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
@@ -67,9 +66,9 @@ public class PlaybackService extends Service {
         });
     }
 
-    //재생준비여부를 반환합니다.
-    public boolean isReady() {
-        return ready;
+    //재생여부를 반환합니다.
+    public boolean isPlaying() {
+        return playback.isPlaying();
     }
 
     //현재 음악정보를 반환합니다.
@@ -102,7 +101,7 @@ public class PlaybackService extends Service {
 
     //그냥 재생합니다. 플레이어가 준비돼야만 재생합니다.
     public void setPlay() {
-        if (isReady()) {
+        if (ready) {
             playback.start();
             sendBroadcast(new Intent(CHANGE));
         }
@@ -118,7 +117,7 @@ public class PlaybackService extends Service {
 
     //일시 정지합니다.
     public void setPause() {
-        if (isReady()) {
+        if (isPlaying()) {
             playback.pause();
             sendBroadcast(new Intent(CHANGE));
         }

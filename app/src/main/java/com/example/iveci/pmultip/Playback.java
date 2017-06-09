@@ -58,7 +58,7 @@ public class Playback extends AppCompatActivity {
     class mps extends Thread {
         @Override
         public void run() {
-            while(MusicApplication.getInstance().getManager().isReady()){
+            while(MusicApplication.getInstance().getManager().isPlaying()){
                 final int spos = MusicApplication.getInstance().getManager().getCurrent();
                 timeseek.setProgress(spos);
                 try {
@@ -112,7 +112,7 @@ public class Playback extends AppCompatActivity {
 
     //UI를 새로고칩니다.
     public void refresh() {
-        if (MusicApplication.getInstance().getManager().isReady()) {
+        if (MusicApplication.getInstance().getManager().isPlaying()) {
             iplay.setImageResource(R.drawable.pause);
         }
         else {

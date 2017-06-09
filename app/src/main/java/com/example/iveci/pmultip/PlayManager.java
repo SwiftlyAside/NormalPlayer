@@ -37,7 +37,7 @@ public class PlayManager {
 
     //재생과 일시정지를 전환합니다.
     public void toggle() {
-        if (isReady()) pService.setPause();
+        if (isPlaying()) pService.setPause();
         else pService.setPlay();
     }
 
@@ -46,9 +46,9 @@ public class PlayManager {
         return null;
     }
 
-    //재생준비여부를 반환합니다.
-    public boolean isReady() {
-        return pService != null && pService.isReady();
+    //재생여부를 반환합니다.
+    public boolean isPlaying() {
+        return pService != null && pService.isPlaying();
     }
 
     //현재 위치를 반환합니다.
