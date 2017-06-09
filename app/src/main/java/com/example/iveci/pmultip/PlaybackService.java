@@ -25,17 +25,19 @@ import java.util.ArrayList;
 
 public class PlaybackService extends Service {
     private final IBinder ibinder = new playbackServicebinder();
-    MediaPlayer playback = new MediaPlayer();
+    private MediaPlayer playback = new MediaPlayer();
     private ArrayList<Long> m_musics = new ArrayList<>();
     private Meta meta;
     private int pos = 0;
-    boolean ready = false;
+    private boolean ready = false;
+    public static String READY = "READY", CHANGE = "CHANGED";
 
     public class playbackServicebinder extends Binder {
         PlaybackService getService() {
             return PlaybackService.this;
         }
     }
+
     public PlaybackService() {
     }
 
@@ -48,6 +50,7 @@ public class PlaybackService extends Service {
             public void onPrepared(MediaPlayer mp) {
                 ready = true;
                 mp.start();
+                sendBroadcast(new Intent(READY));
             }
         });
         playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -56,9 +59,22 @@ public class PlaybackService extends Service {
                 if (pos < m_musics.size() - 1) {
                     setPlay(++pos);
                 }
-                else ready = false;
+                else {
+                    ready = false;
+                    sendBroadcast(new Intent(CHANGE));
+                }
             }
         });
+    }
+
+    //재생준비여부를 반환합니다.
+    public boolean isReady() {
+        return ready;
+    }
+
+    //현재 음악정보를 반환합니다.
+    public Meta getMeta() {
+        return meta;
     }
 
     //메타데이터로 재생합니다.
@@ -81,7 +97,10 @@ public class PlaybackService extends Service {
 
     //그냥 재생합니다. 플레이어가 준비돼야만 재생합니다.
     public void setPlay() {
-        if (ready) playback.start();
+        if (isReady()) {
+            playback.start();
+            sendBroadcast(new Intent(CHANGE));
+        }
     }
 
     //선택한 위치에 있는 음악을 재생합니다. 플레이어 준비 여부에 관계없이 작동합니다.
@@ -93,7 +112,10 @@ public class PlaybackService extends Service {
 
     //일시 정지합니다.
     public void setPause() {
-        if (ready) playback.pause();
+        if (isReady()) {
+            playback.pause();
+            sendBroadcast(new Intent(CHANGE));
+        }
     }
 
     //이전 곡 또는 처음위치로 갑니다.

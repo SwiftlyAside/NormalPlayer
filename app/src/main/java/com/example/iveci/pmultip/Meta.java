@@ -15,7 +15,7 @@ public class Meta implements Serializable {
     private String title;
     private String album;
     private String artist;
-    private String duration;
+    private int duration;
 
     public static Meta setByCursor(Cursor cursor) {
         Meta meta = new Meta();
@@ -24,7 +24,7 @@ public class Meta implements Serializable {
         meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
         meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
         meta.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-        meta.setDuration(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+        meta.setDuration(Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
         return meta;
     }
 
@@ -68,11 +68,11 @@ public class Meta implements Serializable {
         this.artist = artist;
     }
 
-    public String getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 

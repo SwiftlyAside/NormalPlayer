@@ -35,6 +35,22 @@ public class PlayManager {
                 .setPackage(context.getPackageName()), serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    //재생과 일시정지를 전환합니다.
+    public void toggle() {
+        if (isReady()) pService.setPause();
+        else pService.setPlay();
+    }
+
+    public Meta getMeta() {
+        if (pService != null) return pService.getMeta();
+        return null;
+    }
+
+    //재생준비여부를 반환합니다.
+    public boolean isReady() {
+        return pService != null && pService.isReady();
+    }
+
     public void playList(ArrayList<Long> musics) {
         if (pService != null) pService.getList(musics);
     }

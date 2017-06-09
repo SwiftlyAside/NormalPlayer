@@ -105,12 +105,14 @@
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
-        <Button
+        <ImageButton
             android:id="@+id/bprev"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_margin="10dp"
-            android:clickable="false"
+            android:src="@drawable/back"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
             android:onClick="onClick"
             android:text="Prev" />
 
@@ -119,18 +121,20 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_margin="10dp"
-            android:src="@drawable/play"
+            android:src="@drawable/pause"
             android:scaleType="fitCenter"
             android:background="#00000000"
             android:onClick="onClick"
             />
 
-        <Button
+        <ImageButton
             android:id="@+id/bnext"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_margin="10dp"
-            android:clickable="false"
+            android:src="@drawable/next"
+            android:scaleType="fitCenter"
+            android:background="#00000000"
             android:onClick="onClick"
             android:text="Next" />
 
