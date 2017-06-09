@@ -72,10 +72,10 @@ public class PlayManager {
     }
 
     public void next() {
-        if (pService != null) pService.setNext();
+        if (pService != null && pService.getMeta() != null) pService.setNext();
     }
 
     public void prev() {
-        if (pService != null) pService.setPrev();
+        if (pService != null && pService.getMeta() != null) pService.setPrev();
     }
 }
