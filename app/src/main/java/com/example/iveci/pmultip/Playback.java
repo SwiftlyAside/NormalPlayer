@@ -27,10 +27,6 @@ import com.squareup.picasso.Picasso;
 * 음악 재생/일시정지
 * 트래킹바로 위치변경
 * 이전/다음 곡 전환
-*
-*
-* ETC:
-* 이 프로그램에서 상단바는 쓰지 않음.
 * 
 * */
 public class Playback extends AppCompatActivity {
