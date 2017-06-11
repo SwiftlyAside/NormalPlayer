@@ -13,19 +13,35 @@
         android:layout_height="match_parent" />
 
     <LinearLayout
+        android:id="@+id/linear"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="invisible">
 
-        <TextView
-            android:id="@+id/textView2"
-            android:padding="10dp"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="24sp"
-            android:text="Playlist" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+
+            <ImageButton
+                android:id="@+id/iback"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="?attr/selectableItemBackground"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/left" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="Playlist"
+                android:textSize="24sp" />
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/mplaylist"

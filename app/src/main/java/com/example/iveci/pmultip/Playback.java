@@ -78,6 +78,7 @@ public class Playback extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) { //초기화
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
         album    = (ImageView)findViewById(R.id.ialbumart);
         iplay    = (ImageButton)findViewById(R.id.bstst);
         timeseek = (SeekBar) findViewById(R.id.timeseek);

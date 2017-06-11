@@ -5,7 +5,8 @@
     android:singleLine="true"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:textSize="20sp"
+    android:layout_margin="5dp"
+    android:textSize="15sp"
     android:ellipsize="marquee">
 
 </TextView>
