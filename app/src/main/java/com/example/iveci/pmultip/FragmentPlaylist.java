@@ -11,11 +11,11 @@ import android.view.ViewGroup;
  * Created by iveci on 2017-06-11.
  */
 
-public class FragmentStreaming extends Fragment {
+public class FragmentPlaylist extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View stream = inflater.inflate(R.layout.fragment_streaming, null);
+        View stream = inflater.inflate(R.layout.fragment_playlist, null);
 
         return stream;
     }

@@ -57,7 +57,7 @@ public class PlayManager {
         return 0;
     }
 
-    //선택한 음악을 삭제합니다.
+    //선택한 음악을 삭제합니다. (미구현)
     public boolean delete(int position){
 
         return false;

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -39,7 +38,7 @@ public class Tab extends AppCompatActivity {
             viewPager = (ViewPager) findViewById(R.id.pager);
             adapter = new ViewPagerAdapter(getSupportFragmentManager());
             adapter.addFragment("음악", new FragmentExplorer());
-            adapter.addFragment("스트리밍", new FragmentStreaming());
+            adapter.addFragment("재생목록", new FragmentPlaylist());
             viewPager.setAdapter(adapter);
             tabLayout.setupWithViewPager(viewPager);
         }
