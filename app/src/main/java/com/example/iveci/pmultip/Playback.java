@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -35,7 +36,7 @@ public class Playback extends AppCompatActivity {
     SeekBar timeseek;
     TextView sinfo, ainfo, nowpos, endpos;
 
-    //Service로부터 메시지를 받습니다.
+    //PlaybackService로부터 메시지를 받습니다.
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -86,8 +87,6 @@ public class Playback extends AppCompatActivity {
         endpos   = (TextView) findViewById(R.id.sendpos);
         registerBroadCast();
         refresh();
-        sinfo.setSelected(true);
-        ainfo.setSelected(true);
 
         timeseek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

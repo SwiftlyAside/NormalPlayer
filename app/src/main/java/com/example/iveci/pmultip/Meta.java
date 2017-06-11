@@ -2,11 +2,13 @@ package com.example.iveci.pmultip;
 
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.Serializable;
 
 /**
  * Created by iveci on 2017-06-05.
+ * Desctiption: 음악의 메타데이터를 가지는 데이터클래스입니다.
  */
 
 public class Meta implements Serializable {
@@ -19,6 +21,7 @@ public class Meta implements Serializable {
 
     public static Meta setByCursor(Cursor cursor) {
         Meta meta = new Meta();
+        Log.d("Dur", cursor.getPosition()+"");
         meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
         meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
         meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
@@ -84,7 +87,7 @@ public class Meta implements Serializable {
                 ", title='" + title + '\'' +
                 ", album='" + album + '\'' +
                 ", artist='" + artist + '\'' +
-                ", duration='" + duration + '\'' +
+                ", duration=" + duration +
                 '}';
     }
 }

@@ -59,7 +59,7 @@ public class PlaybackService extends Service {
                     setPlay(++pos);
                 }
                 else {
-                    ready = false;
+//                    ready = false;
                     sendBroadcast(new Intent(CHANGE));
                 }
             }

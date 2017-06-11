@@ -98,7 +98,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                             .setPositiveButton("네", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-
+                                    MusicApplication.getInstance().getManager().delete(viewpos);
                                 }
                             })
                             .setNegativeButton("아니오", null)

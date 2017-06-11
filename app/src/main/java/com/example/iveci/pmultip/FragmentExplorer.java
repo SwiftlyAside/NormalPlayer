@@ -5,24 +5,23 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -40,7 +39,7 @@ import com.squareup.picasso.Picasso;
 *
 * */
 
-public class Explorer extends FragmentActivity {
+public class FragmentExplorer extends Fragment {
     private final static int LOAD = 0x907;
     ImageView album;
     ImageButton pp;
@@ -59,42 +58,43 @@ public class Explorer extends FragmentActivity {
     public void registerBroadCast() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(PlaybackService.CHANGE);
-        registerReceiver(broadcastReceiver, filter);
+        getActivity().registerReceiver(broadcastReceiver, filter);
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_explorer);
-        //권한체크
-        int permissioninfo = ContextCompat.checkSelfPermission(this,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissioninfo == PackageManager.PERMISSION_DENIED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                Toast.makeText(getApplicationContext(),
-                        "SDCard 쓰기 권한이 필요합니다. \n" + "설정에서 수동으로 활성화해주세요.",Toast.LENGTH_SHORT).show();
-            }
-            else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
-            }
-        }
-        else {
-            getMeta();
-            album = (ImageView) findViewById(R.id.imalbumart);
-            songname = (TextView) findViewById(R.id.tvmsongn);
-            pp = (ImageButton) findViewById(R.id.implay);
-            rView = (RecyclerView) findViewById(R.id.mlist);
-            adapter = new MusicAdapter(this, null);
-            rView.setAdapter(adapter);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            rView.setLayoutManager(layoutManager);
-            registerBroadCast();
-            refresh();
-        }
+    public void onStart() {
+        super.onStart();
+/*        getMeta();
+        album = (ImageView) getView().findViewById(R.id.imalbumart);
+        songname = (TextView) getView().findViewById(R.id.tvmsongn);
+        pp = (ImageButton) getView().findViewById(R.id.implay);
+        rView = (RecyclerView) getView().findViewById(R.id.mlist);
+        adapter = new MusicAdapter(getActivity(), null);
+        rView.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        rView.setLayoutManager(layoutManager);
+        registerBroadCast();
+        refresh();*/
+    }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View explorer = inflater.inflate(R.layout.fragment_explorer, null);
+        getMeta();
+        album = (ImageView) explorer.findViewById(R.id.imalbumart);
+        songname = (TextView) explorer.findViewById(R.id.tvmsongn);
+        pp = (ImageButton) explorer.findViewById(R.id.implay);
+        rView = (RecyclerView) explorer.findViewById(R.id.mlist);
+        adapter = new MusicAdapter(getActivity(), null);
+        rView.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        rView.setLayoutManager(layoutManager);
+        registerBroadCast();
+        refresh();
+        return explorer;
     }
 
     //UI를 새로고칩니다.
@@ -109,7 +109,7 @@ public class Explorer extends FragmentActivity {
         Meta meta = MusicApplication.getInstance().getManager().getMeta();
         if (meta != null) {
             Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.getAlbumId()));
-            Picasso.with(getApplicationContext()).load(albumart).error(R.drawable.nothing).into(album);
+            Picasso.with(getContext()).load(albumart).error(R.drawable.nothing).into(album);
             songname.setText(meta.getTitle());
         }
         else {
@@ -118,29 +118,8 @@ public class Explorer extends FragmentActivity {
         }
     }
 
-    public void onClick(View v) {
-        switch (v.getId()){
-            //플레이어 Activity 보이기
-            case R.id.smallplay :{
-                Intent intent = new Intent(Explorer.this, Playback.class);
-                startActivity(intent);
-                break;
-            }
-            //재생, 일시정지
-            case R.id.implay :{
-                MusicApplication.getInstance().getManager().toggle();
-                break;
-            }
-            //다음 곡
-            case R.id.imnext :{
-                MusicApplication.getInstance().getManager().next();
-                break;
-            }
-        }
-    }
-
     public void getMeta() { //로컬 미디어 데이터베이스에서 음악의 메타데이터를 가져옵니다. 어댑터로 전송
-        getSupportLoaderManager().initLoader(LOAD, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+        getLoaderManager().initLoader(LOAD, null, new LoaderManager.LoaderCallbacks<Cursor>() {
             @Override
             public Loader<Cursor> onCreateLoader(int id, Bundle args) {
                 Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -150,7 +129,7 @@ public class Explorer extends FragmentActivity {
                         MediaStore.Audio.Media.ARTIST,  MediaStore.Audio.Media.DURATION};
                 String select = MediaStore.Audio.Media.IS_MUSIC + " = 1";
                 String order  = MediaStore.Audio.Media.TITLE + " COLLATE LOCALIZED ASC";
-                return new CursorLoader(getApplicationContext(),
+                return new CursorLoader(getContext(),
                         uri, proj, select, null, order);
             }
 
@@ -167,8 +146,8 @@ public class Explorer extends FragmentActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(broadcastReceiver);
+    public void onDetach() {
+        super.onDetach();
+        getActivity().unregisterReceiver(broadcastReceiver);
     }
 }
