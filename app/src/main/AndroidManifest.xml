@@ -15,9 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Playback" />
-        <activity android:name=".Explorer">
-
-        </activity>
 
         <service
             android:name=".PlaybackService"
