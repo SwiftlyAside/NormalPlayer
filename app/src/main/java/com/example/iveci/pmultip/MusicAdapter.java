@@ -1,7 +1,9 @@
 package com.example.iveci.pmultip;
 
+import android.app.AlertDialog;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -73,7 +75,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         Meta meta;
         int viewpos;
 
-        MusicViewHolder(View itemView) {
+        MusicViewHolder(final View itemView) {
             super(itemView);
             song = (TextView) itemView.findViewById(R.id.tsongname);
             artist = (TextView) itemView.findViewById(R.id.tartist);
@@ -83,6 +85,25 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                 public void onClick(View v) {
                     MusicApplication.getInstance().getManager().playList(getMusicIds());
                     MusicApplication.getInstance().getManager().play(viewpos);
+                }
+            });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
+                    dlg.setTitle("음악 삭제")
+                            .setIcon(R.drawable.delete)
+                            .setMessage("이 음악을 삭제합니다. 계속하시겠습니까?")
+                            .setCancelable(true)
+                            .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .setNegativeButton("아니오", null)
+                            .show();
+                    return true;
                 }
             });
         }

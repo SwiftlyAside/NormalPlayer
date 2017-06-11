@@ -72,11 +72,8 @@
         android:textSize="20sp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:scrollHorizontally="true"
-        android:focusable="true"
+        android:gravity="center"
         android:maxLines="1"
-        android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -85,11 +82,8 @@
         android:textSize="13sp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:scrollHorizontally="true"
-        android:focusable="true"
+        android:gravity="center"
         android:maxLines="1"
-        android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
