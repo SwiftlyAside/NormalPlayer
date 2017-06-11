@@ -14,6 +14,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,6 @@ public class FragmentPlaylist extends Fragment {
     ListView listView;
     RecyclerView recyclerView;
     ArrayList<Playlist> plist = new ArrayList<>();
-    ArrayList<String> list = new ArrayList<>();
     ArrayAdapter<Playlist> adapter;
     MusicAdapter playlistAdapter;
 
@@ -52,11 +52,11 @@ public class FragmentPlaylist extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View plView = inflater.inflate(R.layout.fragment_playlist, null);
+        getPlaylist();
         linear = (LinearLayout) plView.findViewById(R.id.linear);
         listView = (ListView) plView.findViewById(R.id.playlist);
         back = (ImageButton) plView.findViewById(R.id.iback);
         recyclerView = (RecyclerView) plView.findViewById(R.id.mplaylist);
-        plist.add(new Playlist(null,"새 재생목록 만들기"));
         adapter = new ArrayAdapter<>(getActivity(), R.layout.playlist_dropdown, plist);
         listView.setAdapter(adapter);
         //클릭시 재생목록 내용을 보여준다. Explorer
@@ -103,13 +103,17 @@ public class FragmentPlaylist extends Fragment {
     }
 
     public void getPlaylist() { //재생목록을 가져옵니다.
+        plist = new ArrayList<>();
+        plist.add(new Playlist(null,"새 재생목록 만들기"));
         Uri uri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
         String[] proj = {
                 MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME};
         String order = MediaStore.Audio.Playlists.NAME + " COLLATE LOCALIZED ASC";
-        Cursor cursor = getActivity().getContentResolver().query(uri,proj,null,null,order);
+
+        Cursor cursor = getActivity().getContentResolver().query(uri,proj,null,null,null);
         while (cursor.moveToNext()) {
             plist.add(Playlist.setByCursor(cursor));
+            Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
         }
         cursor.close();
     }
