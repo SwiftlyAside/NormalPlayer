@@ -21,7 +21,6 @@ public class Meta implements Serializable {
 
     public static Meta setByCursor(Cursor cursor) {
         Meta meta = new Meta();
-        Log.d("Dur", cursor.getPosition()+"");
         meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
         meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
         meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));

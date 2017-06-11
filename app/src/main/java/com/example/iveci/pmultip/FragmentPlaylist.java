@@ -2,10 +2,16 @@ package com.example.iveci.pmultip;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -32,12 +38,14 @@ import java.util.ArrayList;
  * */
 
 public class FragmentPlaylist extends Fragment {
+    private final static int LOAD = 0x501;
     LinearLayout linear;
     ImageButton back;
     ListView listView;
     RecyclerView recyclerView;
+    ArrayList<Playlist> plist = new ArrayList<>();
     ArrayList<String> list = new ArrayList<>();
-    ArrayAdapter<String> adapter;
+    ArrayAdapter<Playlist> adapter;
     MusicAdapter playlistAdapter;
 
     @Nullable
@@ -48,8 +56,8 @@ public class FragmentPlaylist extends Fragment {
         listView = (ListView) plView.findViewById(R.id.playlist);
         back = (ImageButton) plView.findViewById(R.id.iback);
         recyclerView = (RecyclerView) plView.findViewById(R.id.mplaylist);
-        list.add("새 재생목록 만들기");
-        adapter = new ArrayAdapter<>(getActivity(), R.layout.playlist_dropdown, list);
+        plist.add(new Playlist(null,"새 재생목록 만들기"));
+        adapter = new ArrayAdapter<>(getActivity(), R.layout.playlist_dropdown, plist);
         listView.setAdapter(adapter);
         //클릭시 재생목록 내용을 보여준다. Explorer
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -92,5 +100,44 @@ public class FragmentPlaylist extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         return plView;
+    }
+
+    public void getPlaylist() { //재생목록을 가져옵니다.
+        Uri uri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
+        String[] proj = {
+                MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME};
+        String order = MediaStore.Audio.Playlists.NAME + " COLLATE LOCALIZED ASC";
+        Cursor cursor = getActivity().getContentResolver().query(uri,proj,null,null,order);
+        while (cursor.moveToNext()) {
+            plist.add(Playlist.setByCursor(cursor));
+        }
+        cursor.close();
+    }
+
+    public void getMeta() { //로컬 미디어 데이터베이스에서 음악의 메타데이터를 가져옵니다. 어댑터로 전송
+        getLoaderManager().initLoader(LOAD, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+            @Override
+            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                String[] proj = {
+                        MediaStore.Audio.Media._ID,     MediaStore.Audio.Media.ALBUM_ID,
+                        MediaStore.Audio.Media.TITLE,   MediaStore.Audio.Media.ALBUM,
+                        MediaStore.Audio.Media.ARTIST,  MediaStore.Audio.Media.DURATION};
+                String select = MediaStore.Audio.Media.IS_MUSIC + " = 1";
+                String order  = MediaStore.Audio.Media.TITLE + " COLLATE LOCALIZED ASC";
+                return new CursorLoader(getContext(),
+                        uri, proj, select, null, order);
+            }
+
+            @Override
+            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                playlistAdapter.swapCursor(data);
+            }
+
+            @Override
+            public void onLoaderReset(Loader<Cursor> loader) {
+                playlistAdapter.swapCursor(null);
+            }
+        });
     }
 }
