@@ -39,7 +39,6 @@ public class Playlist {
 
     public static Playlist setByCursor(Cursor cursor) {
         Playlist playlist = new Playlist();
-        Log.d("Dur", cursor.getPosition()+"");
         playlist.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
         playlist.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
         return playlist;

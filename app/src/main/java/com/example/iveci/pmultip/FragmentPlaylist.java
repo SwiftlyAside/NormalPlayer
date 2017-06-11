@@ -1,6 +1,7 @@
 package com.example.iveci.pmultip;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
  * */
 
 public class FragmentPlaylist extends Fragment {
+    Context appContext = Tab.getContextOfApplication();
     private final static int LOAD = 0x501;
     LinearLayout linear;
     ImageButton back;
@@ -105,14 +107,17 @@ public class FragmentPlaylist extends Fragment {
     public void getPlaylist() { //재생목록을 가져옵니다.
         plist = new ArrayList<>();
         plist.add(new Playlist(null,"새 재생목록 만들기"));
-        Uri uri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
         String[] proj = {
                 MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME};
         String order = MediaStore.Audio.Playlists.NAME + " COLLATE LOCALIZED ASC";
-
-        Cursor cursor = getActivity().getContentResolver().query(uri,proj,null,null,null);
+        Cursor cursor = appContext.getContentResolver().query(MediaStore.Audio.Playlists.getContentUri("external")
+                ,proj,null,null,order);
+        Log.d("NUMBER: ",cursor.getCount()+"");
         while (cursor.moveToNext()) {
-            plist.add(Playlist.setByCursor(cursor));
+            Playlist pl = new Playlist();
+            pl.setId(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists._ID)));
+            pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
+            plist.add(pl);
             Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
         }
         cursor.close();
