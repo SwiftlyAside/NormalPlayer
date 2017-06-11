@@ -33,9 +33,7 @@ import com.squareup.picasso.Picasso;
 *
 * Functions:
 * 재생목록 표시
-* 재생목록 생성(미구현)
-* 재생목록 검색(미구현)
-* 분류화(앨범/아티스트) (미구현)
+* 분류화(앨범) (구현중)
 *
 * */
 
@@ -59,23 +57,6 @@ public class FragmentExplorer extends Fragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction(PlaybackService.CHANGE);
         getActivity().registerReceiver(broadcastReceiver, filter);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-/*        getMeta();
-        album = (ImageView) getView().findViewById(R.id.imalbumart);
-        songname = (TextView) getView().findViewById(R.id.tvmsongn);
-        pp = (ImageButton) getView().findViewById(R.id.implay);
-        rView = (RecyclerView) getView().findViewById(R.id.mlist);
-        adapter = new MusicAdapter(getActivity(), null);
-        rView.setAdapter(adapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        rView.setLayoutManager(layoutManager);
-        registerBroadCast();
-        refresh();*/
     }
 
     @Nullable

@@ -39,8 +39,7 @@ public class Tab extends AppCompatActivity {
             viewPager = (ViewPager) findViewById(R.id.pager);
             adapter = new ViewPagerAdapter(getSupportFragmentManager());
             adapter.addFragment("음악", new FragmentExplorer());
-            adapter.addFragment("아티스트", new Fragment());
-            adapter.addFragment("앨범", new Fragment());
+            adapter.addFragment("스트리밍", new FragmentStreaming());
             viewPager.setAdapter(adapter);
             tabLayout.setupWithViewPager(viewPager);
         }
