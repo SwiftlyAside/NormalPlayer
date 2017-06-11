@@ -110,12 +110,13 @@ public class FragmentPlaylist extends Fragment {
         String[] proj = {
                 MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME};
         String order = MediaStore.Audio.Playlists.NAME + " COLLATE LOCALIZED ASC";
-        Cursor cursor = appContext.getContentResolver().query(MediaStore.Audio.Playlists.getContentUri("external")
+        Cursor cursor = appContext.getContentResolver().query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
                 ,proj,null,null,order);
         Log.d("NUMBER: ",cursor.getCount()+"");
+        cursor.moveToFirst();
         while (cursor.moveToNext()) {
             Playlist pl = new Playlist();
-            pl.setId(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Playlists._ID)));
+            pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
             pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
             plist.add(pl);
             Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
