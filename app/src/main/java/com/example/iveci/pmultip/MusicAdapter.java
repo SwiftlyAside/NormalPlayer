@@ -52,7 +52,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         return new MusicViewHolder(v);
     }
 
-    //ListView 정보를 갱신합니다.
+    //RecyclerView 정보를 갱신합니다.
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
         Meta meta = Meta.setByCursor(cursor);

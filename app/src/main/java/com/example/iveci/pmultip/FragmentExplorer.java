@@ -29,11 +29,10 @@ import com.squareup.picasso.Picasso;
 /*
 * Explorer
 * Description:
-* 이 Activity는 재생목록 탐색과 생성을 담당합니다.
+* 이 Activity는 음악(곡명순) 탐색 UI입니다.
 *
 * Functions:
-* 재생목록 표시
-* 분류화(앨범) (구현중)
+* 음악목록 표시
 *
 * */
 
@@ -53,6 +52,7 @@ public class FragmentExplorer extends Fragment {
         }
     };
 
+    //브로드캐스터를 등록합니다.
     public void registerBroadCast() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(PlaybackService.CHANGE);
