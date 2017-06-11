@@ -114,13 +114,13 @@ public class FragmentPlaylist extends Fragment {
                 ,proj,null,null,order);
         Log.d("NUMBER: ",cursor.getCount()+"");
         cursor.moveToFirst();
-        while (true) {
+        while (cursor.moveToNext()) {
             Playlist pl = new Playlist();
             pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
             pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
             plist.add(pl);
             Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
-            if (!cursor.moveToNext()) break;
+//            if (!cursor.moveToNext()) break;
         }
         cursor.close();
     }
