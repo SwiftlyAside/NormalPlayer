@@ -39,7 +39,6 @@ public class Tab extends AppCompatActivity {
                         new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
             }
         }
-        else {
             setContentView(R.layout.activity_tab);
             tabLayout = (TabLayout) findViewById(R.id.tab);
             viewPager = (ViewPager) findViewById(R.id.pager);
@@ -48,7 +47,6 @@ public class Tab extends AppCompatActivity {
             adapter.addFragment("재생목록", new FragmentPlaylist());
             viewPager.setAdapter(adapter);
             tabLayout.setupWithViewPager(viewPager);
-        }
     }
 
 

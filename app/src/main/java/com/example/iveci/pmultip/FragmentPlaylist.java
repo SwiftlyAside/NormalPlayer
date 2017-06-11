@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -114,6 +115,16 @@ public class FragmentPlaylist extends Fragment {
                 ,proj,null,null,order);
         Log.d("NUMBER: ",cursor.getCount()+"");
         cursor.moveToFirst();
+        if (cursor.getCount() < 1) {
+            Log.d("No playlists" ,"found.");
+        }
+        else {
+            Playlist pl = new Playlist();
+            pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
+            pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
+            plist.add(pl);
+            Log.d("NAMEFIRST: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
+        }
         while (cursor.moveToNext()) {
             Playlist pl = new Playlist();
             pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
