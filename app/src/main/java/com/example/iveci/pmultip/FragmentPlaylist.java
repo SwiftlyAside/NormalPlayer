@@ -1,6 +1,7 @@
 package com.example.iveci.pmultip;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -8,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -77,7 +79,7 @@ public class FragmentPlaylist extends Fragment {
                             .setPositiveButton("생성", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-//생성
+                                    createPlaylist(listname.getText().toString());
                                 }
                             })
                             .setNegativeButton("취소", null)
@@ -105,7 +107,8 @@ public class FragmentPlaylist extends Fragment {
         return plView;
     }
 
-    public void getPlaylist() { //재생목록을 가져옵니다.
+    //재생목록을 가져옵니다.
+    public void getPlaylist() {
         plist = new ArrayList<>();
         plist.add(new Playlist(null,"새 재생목록 만들기"));
         String[] proj = {
@@ -114,26 +117,61 @@ public class FragmentPlaylist extends Fragment {
         Cursor cursor = appContext.getContentResolver().query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
                 ,proj,null,null,order);
         Log.d("NUMBER: ",cursor.getCount()+"");
-        cursor.moveToFirst();
         if (cursor.getCount() < 1) {
             Log.d("No playlists" ,"found.");
         }
         else {
-            Playlist pl = new Playlist();
+            for (boolean exists = cursor.moveToFirst(); exists; exists = cursor.moveToNext()) {
+                Playlist pl = new Playlist();
+                pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
+                pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
+                plist.add(pl);
+                Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
+            }
+/*            Playlist pl = new Playlist();
             pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
             pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
             plist.add(pl);
-            Log.d("NAMEFIRST: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
+            Log.d("NAMEFIRST: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));*/
         }
-        while (cursor.moveToNext()) {
+        /*while (cursor.moveToNext()) {
             Playlist pl = new Playlist();
             pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
             pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
             plist.add(pl);
             Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
 //            if (!cursor.moveToNext()) break;
-        }
+        }*/
         cursor.close();
+    }
+
+    //재생목록을 생성합니다. 생성 성공여부를 메시지로 출력합니다.
+    public void createPlaylist(String name) {
+        try {
+            for (Playlist p : plist) {
+                if (p.getName().equalsIgnoreCase(name)) throw new Exception("동일한 이름 존재.");
+            }
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Audio.Playlists.NAME, name);
+            values.put(MediaStore.Audio.Playlists.DATE_ADDED, System.currentTimeMillis());
+            values.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
+            appContext.getContentResolver().insert(
+                    MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values);
+            Toast.makeText(appContext, "재생목록 "+name+" 을 생성했습니다.\n", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(appContext, "재생목록 생성에 실패했습니다.\n" +
+                    e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //재생목록에 음악을 추가합니다.
+    public void addToPlaylist(String musicid, long playlistid, int position) {
+        Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, position);
+        values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, musicid);
+        values.put(MediaStore.Audio.Playlists.Members.PLAYLIST_ID, playlistid);
+        appContext.getContentResolver().insert(puri, values);
     }
 
     public void getMeta() { //로컬 미디어 데이터베이스에서 음악의 메타데이터를 가져옵니다. 어댑터로 전송
