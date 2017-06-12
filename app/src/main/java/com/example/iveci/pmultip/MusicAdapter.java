@@ -56,7 +56,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
         Meta meta = Meta.setByCursor(cursor);
-        ((MusicViewHolder) viewHolder).setItem(meta, cursor.getPosition(), false);
+        ((MusicViewHolder) viewHolder).setItem(meta, cursor.getPosition());
     }
 
     public ArrayList<Long> getMusicIds() {
@@ -108,7 +108,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
             });
         }
 
-        public void setItem(Meta m_meta, int position, boolean playing) {
+        public void setItem(Meta m_meta, int position) {
             meta = m_meta;
             viewpos = position;
             song.setText(m_meta.getTitle());

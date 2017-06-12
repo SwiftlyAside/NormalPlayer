@@ -9,23 +9,23 @@ import android.util.Log;
  */
 
 public class Playlist {
-    private String id;
+    private long id;
     private String name;
 
     public Playlist(){
 
     }
 
-    public Playlist(String id, String name) {
+    public Playlist(long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -39,7 +39,7 @@ public class Playlist {
 
     public static Playlist setByCursor(Cursor cursor) {
         Playlist playlist = new Playlist();
-        playlist.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
+        playlist.setId(Long.parseLong(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID))));
         playlist.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
         return playlist;
     }

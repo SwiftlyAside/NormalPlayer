@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -45,11 +46,13 @@ import java.util.ArrayList;
 public class FragmentPlaylist extends Fragment {
     Context appContext = Tab.getContextOfApplication();
     private final static int LOAD = 0x501;
+    long pid;
     LinearLayout linear;
     ImageButton back;
+    TextView playlisttitle;
     ListView listView;
     RecyclerView recyclerView;
-    ArrayList<Playlist> plist = new ArrayList<>();
+    ArrayList<Playlist> plist;
     ArrayAdapter<Playlist> adapter;
     MusicAdapter playlistAdapter;
 
@@ -62,15 +65,21 @@ public class FragmentPlaylist extends Fragment {
         listView = (ListView) plView.findViewById(R.id.playlist);
         back = (ImageButton) plView.findViewById(R.id.iback);
         recyclerView = (RecyclerView) plView.findViewById(R.id.mplaylist);
-        adapter = new ArrayAdapter<>(getActivity(), R.layout.playlist_dropdown, plist);
+        playlisttitle = (TextView) plView.findViewById(R.id.tvtitle);
+        adapter = new ArrayAdapter<>(getContext(), R.layout.playlist_dropdown, plist);
         listView.setAdapter(adapter);
+        playlistAdapter = new MusicAdapter(getContext(), null);
+        recyclerView.setAdapter(playlistAdapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
         //클릭시 재생목록 내용을 보여준다. Explorer
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
                     final EditText listname = new EditText(getContext());
-                    AlertDialog.Builder dlg = new AlertDialog.Builder(getActivity());
+                    AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
                     dlg.setIcon(R.drawable.plus)
                             .setTitle("재생목록 생성")
                             .setMessage("\n생성할 재생목록 이름을 입력하세요.")
@@ -80,7 +89,6 @@ public class FragmentPlaylist extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     createPlaylist(listname.getText().toString());
-                                    getPlaylist();
                                     adapter.notifyDataSetChanged();
                                 }
                             })
@@ -88,6 +96,11 @@ public class FragmentPlaylist extends Fragment {
                             .show();
                 }
                 else {
+                    playlisttitle.setText(plist.get(position).getName());
+                    getPlaylistMember(plist.get(position));
+                    playlistAdapter.notifyDataSetChanged();
+
+                    Log.d("갱신보냄","");
                     listView.setVisibility(View.INVISIBLE);
                     linear.setVisibility(View.VISIBLE);
                     //내용 쿼리후 보여줄것
@@ -101,52 +114,29 @@ public class FragmentPlaylist extends Fragment {
                 linear.setVisibility(View.INVISIBLE);
             }
         });
-        playlistAdapter = new MusicAdapter(getActivity(), null);
-        recyclerView.setAdapter(playlistAdapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
         return plView;
     }
 
-    //재생목록을 가져옵니다.
+
+    //모든 재생목록을 가져옵니다.
     public void getPlaylist() {
         plist = new ArrayList<>();
-        plist.add(new Playlist(null,"새 재생목록 만들기"));
+        plist.add(new Playlist(-1,"새 재생목록 만들기"));
         String[] proj = {
                 MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME};
         String order = MediaStore.Audio.Playlists.NAME + " COLLATE LOCALIZED ASC";
         Cursor cursor = appContext.getContentResolver().query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
                 ,proj,null,null,order);
-        Log.d("NUMBER: ",cursor.getCount()+"");
-        if (cursor.getCount() < 1) {
-            Log.d("No playlists" ,"found.");
-        }
-        else {
+        if (cursor.getCount() >= 1) {
             for (boolean exists = cursor.moveToFirst(); exists; exists = cursor.moveToNext()) {
-                Playlist pl = new Playlist();
-                pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
-                pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
+                Playlist pl = Playlist.setByCursor(cursor);
                 plist.add(pl);
                 Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
             }
             for (Playlist p : plist) {
                 Log.d("VALUES: ", p.getName());
             }
-/*            Playlist pl = new Playlist();
-            pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
-            pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
-            plist.add(pl);
-            Log.d("NAMEFIRST: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));*/
         }
-        /*while (cursor.moveToNext()) {
-            Playlist pl = new Playlist();
-            pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
-            pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
-            plist.add(pl);
-            Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
-//            if (!cursor.moveToNext()) break;
-        }*/
         cursor.close();
     }
 
@@ -179,6 +169,46 @@ public class FragmentPlaylist extends Fragment {
         appContext.getContentResolver().insert(puri, values);
     }
 
+    //선택한 재생목록의 내용을 가져옵니다. 어댑터로 전송.
+    public void getPlaylistMember(Playlist pl) {
+        pid = pl.getId();
+        if (getLoaderManager().hasRunningLoaders()) getLoaderManager().restartLoader(LOAD, null, plload);
+        else getLoaderManager().initLoader(LOAD,null,plload);
+
+    }
+
+    LoaderManager.LoaderCallbacks<Cursor> plload = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
+            String[] proj0 = {MediaStore.Audio.Playlists.Members.AUDIO_ID};
+            Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
+            if (member.moveToFirst()) {
+                String[] proj = {
+                        MediaStore.Audio.Playlists.Members._ID, MediaStore.Audio.Playlists.Members.ALBUM_ID,
+                        MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
+                        MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
+                String select = MediaStore.Audio.Media._ID + " = ?";
+                long aid = member.getLong(member.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID));
+                String[] arg = {""+aid};
+                return new CursorLoader(getActivity(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                        ,proj,select,arg, null);
+            }
+            return null;
+
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            playlistAdapter.swapCursor(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            playlistAdapter.swapCursor(null);
+        }
+    };
+
     public void getMeta() { //로컬 미디어 데이터베이스에서 음악의 메타데이터를 가져옵니다. 어댑터로 전송
         getLoaderManager().initLoader(LOAD, null, new LoaderManager.LoaderCallbacks<Cursor>() {
             @Override
@@ -190,7 +220,7 @@ public class FragmentPlaylist extends Fragment {
                         MediaStore.Audio.Media.ARTIST,  MediaStore.Audio.Media.DURATION};
                 String select = MediaStore.Audio.Media.IS_MUSIC + " = 1";
                 String order  = MediaStore.Audio.Media.TITLE + " COLLATE LOCALIZED ASC";
-                return new CursorLoader(getContext(),
+                return new CursorLoader(getActivity(),
                         uri, proj, select, null, order);
             }
 

@@ -156,6 +156,7 @@ public class PlaybackService extends Service {
     //재생할 음악의 메타데이터를 쿼리합니다.
     private void queryMusic(int position) {
         long musicid = m_musics.get(position);
+        pos = position;
         String[] proj = {
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.ALBUM_ID,
