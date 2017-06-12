@@ -202,25 +202,14 @@ public class FragmentPlaylist extends Fragment {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
-            String[] proj0 = new String[] {MediaStore.Audio.Playlists.Members.AUDIO_ID};
-            Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
-            if (member.moveToFirst()) {
-                Log.d("COUNT: ",""+member.getCount());
                 String[] proj = new String[] {
-                        MediaStore.Audio.Playlists.Members._ID, MediaStore.Audio.Playlists.Members.ALBUM_ID,
-                        MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
-                        MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
-                String select = MediaStore.Audio.Media._ID + " = ?";
-                long aid = member.getLong(member.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID));
-                String[] arg = {""+aid};
+                        MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
+                        MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
+                        MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DURATION,
+                        MediaStore.Audio.Playlists.Members.AUDIO_ID};
                 String order = MediaStore.Audio.Genres.Members.DEFAULT_SORT_ORDER;
-                member.close();
-                return new CursorLoader(getContext(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                        ,proj,select,arg, order);
-            }
-            member.close();
-            return null;
-
+                return new CursorLoader(getContext(), uri
+                        ,proj,null,null, order);
         }
 
         @Override
