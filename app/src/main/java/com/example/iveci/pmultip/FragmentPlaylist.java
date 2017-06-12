@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * Created by iveci on 2017-06-11.
  * Explorer
  * Description:
- * 이 Activity는 재생목록 탐색과 생성을 담당합니다.
+ * 이 Activity는 재생목록 탐색과 생성, 삭제를 담당합니다.
  *
  * Functions:
  * 재생목록 표시
@@ -206,7 +206,7 @@ public class FragmentPlaylist extends Fragment {
     //선택한 재생목록의 내용을 가져옵니다. 어댑터로 전송.
     public void getPlaylistMember(Playlist pl) {
         pid = pl.getId();
-        getLoaderManager().initLoader(LOAD, null, plload);
+        if (!getLoaderManager().hasRunningLoaders()) getLoaderManager().initLoader(LOAD, null, plload);
     }
 
     LoaderManager.LoaderCallbacks<Cursor> plload = new LoaderManager.LoaderCallbacks<Cursor>() {
