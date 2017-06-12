@@ -80,6 +80,8 @@ public class FragmentPlaylist extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     createPlaylist(listname.getText().toString());
+                                    getPlaylist();
+                                    adapter.notifyDataSetChanged();
                                 }
                             })
                             .setNegativeButton("취소", null)
@@ -128,6 +130,9 @@ public class FragmentPlaylist extends Fragment {
                 plist.add(pl);
                 Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
             }
+            for (Playlist p : plist) {
+                Log.d("VALUES: ", p.getName());
+            }
 /*            Playlist pl = new Playlist();
             pl.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID)));
             pl.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
@@ -157,7 +162,7 @@ public class FragmentPlaylist extends Fragment {
             values.put(MediaStore.Audio.Playlists.DATE_MODIFIED, System.currentTimeMillis());
             appContext.getContentResolver().insert(
                     MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI, values);
-            Toast.makeText(appContext, "재생목록 "+name+" 을 생성했습니다.\n", Toast.LENGTH_SHORT).show();
+            Toast.makeText(appContext, "재생목록 "+name+" 을 생성했습니다.", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(appContext, "재생목록 생성에 실패했습니다.\n" +
                     e.getMessage(), Toast.LENGTH_SHORT).show();
