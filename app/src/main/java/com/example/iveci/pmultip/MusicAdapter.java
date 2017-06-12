@@ -7,8 +7,11 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -93,20 +97,34 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
-                    dlg.setTitle("음악 삭제")
-                            .setIcon(R.drawable.delete)
-                            .setMessage("이 음악을 삭제합니다. 계속하시겠습니까?")
-                            .setCancelable(true)
-                            .setPositiveButton("네", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    deleteItem(getMusicIds().get(viewpos));
-                                    notifyDataSetChanged();
-                                }
-                            })
-                            .setNegativeButton("아니오", null)
-                            .show();
+                    PopupMenu p = new PopupMenu(v.getContext(), v);
+                    p.getMenuInflater().inflate(R.menu.admenu, p.getMenu());
+                    p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (item.getItemId() == R.id.addpl) {
+
+                            }
+                            else {
+                                AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
+                                dlg.setTitle("음악 삭제")
+                                        .setIcon(R.drawable.delete)
+                                        .setMessage("이 음악을 삭제합니다. 계속하시겠습니까?")
+                                        .setCancelable(true)
+                                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                deleteItem(getMusicIds().get(viewpos));
+                                                notifyDataSetChanged();
+                                            }
+                                        })
+                                        .setNegativeButton("아니오", null)
+                                        .show();
+                            }
+                            return false;
+                        }
+                    });
+                    p.show();
                     return true;
                 }
             });
@@ -114,9 +132,22 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
 
         //음악을 삭제합니다.
         public void deleteItem(long id) {
-            Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
-            appContext.getContentResolver().delete(uri,null,null);
-            Toast.makeText(appContext,"삭제하였습니다.", Toast.LENGTH_SHORT).show();
+            Cursor cursor = null;
+            try {
+                Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+                String[] proj = {MediaStore.Audio.Media.DATA};
+                cursor = appContext.getContentResolver().query(uri, proj,null,null,null);
+                cursor.moveToFirst();
+                String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                File file = new File(path);
+                appContext.getContentResolver().delete(uri,null,null);
+                file.delete();
+                Toast.makeText(appContext,"삭제하였습니다.", Toast.LENGTH_SHORT).show();
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(appContext,"삭제하지 못했습니다.\n"+e.getMessage(), Toast.LENGTH_SHORT).show();
+            } finally {
+                if (cursor != null) cursor.close();
+            }
         }
 
 
