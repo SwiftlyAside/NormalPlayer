@@ -2,6 +2,7 @@ package com.example.iveci.pmultip;
 
 import android.app.AlertDialog;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -14,7 +15,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,6 +83,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         private final Uri uri = Uri.parse("content://media/external/audio/albumart/");
         private TextView song, artist;
         private ImageView aAlbumart;
+        ArrayList<Playlist> plist = new ArrayList<>();
         Meta meta;
         int viewpos;
 
@@ -94,29 +99,20 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                     MusicApplication.getInstance().getManager().play(viewpos);
                 }
             });
+            //항목을 길게 누르면 나오는 메뉴 추가.
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
+                public boolean onLongClick(final View v) {
                     PopupMenu p = new PopupMenu(v.getContext(), v);
                     p.getMenuInflater().inflate(R.menu.admenu, p.getMenu());
                     p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
+                            //재생목록에 추가
                             if (item.getItemId() == R.id.addpl) {
-                                AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
-                                dlg.setTitle("재생목록에 추가")
-                                        .setIcon(R.drawable.plus)
-                                        .setMessage("이 음악을 추가할 재생목록 선택.")
-                                        .setCancelable(true)
-                                        .setPositiveButton("추가", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                //추가할것
-                                            }
-                                        })
-                                        .setNegativeButton("취소", null)
-                                        .show();
+                                addToPlaylist(getMusicIds().get(viewpos));
                             }
+                            //삭제
                             else {
                                 AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
                                 dlg.setTitle("음악 삭제")
@@ -141,6 +137,55 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                 }
             });
         }
+        //선택한 재생목록에 음악을 추가합니다.
+        public void addToPlaylist(Long musicid) {
+            getPlaylist();
+            AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
+            final ArrayAdapter<Playlist> adapter = new ArrayAdapter<Playlist>(itemView.getContext(),
+                    R.layout.support_simple_spinner_dropdown_item,plist);
+            dlg.setTitle("음악을 추가할 재생목록 선택.")
+                    .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Playlist pl = adapter.getItem(which);
+
+                }})
+                    .setNegativeButton("취소",null)
+                    .show();
+
+
+
+        }
+
+        //재생목록에 음악을 추가합니다.
+        public void addToPlaylist(String musicid, long playlistid, int position) {
+            Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, position);
+            values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, musicid);
+            values.put(MediaStore.Audio.Playlists.Members.PLAYLIST_ID, playlistid);
+            appContext.getContentResolver().insert(puri, values);
+        }
+
+        //모든 재생목록을 가져옵니다.
+        public void getPlaylist() {
+            plist.clear();
+            plist.add(new Playlist(-1,"새 재생목록 만들기"));
+            String[] proj = {
+                    MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME};
+            String order = MediaStore.Audio.Playlists.NAME + " COLLATE LOCALIZED ASC";
+            Cursor cursor = appContext.getContentResolver().query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
+                    ,proj,null,null,order);
+            if (cursor.getCount() >= 1) {
+                for (boolean exists = cursor.moveToFirst(); exists; exists = cursor.moveToNext()) {
+                    Playlist pl = Playlist.setByCursor(cursor);
+                    plist.add(pl);
+                    Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
+                }
+            }
+            cursor.close();
+        }
+
 
         //음악을 삭제합니다.
         public void deleteItem(long id) {
