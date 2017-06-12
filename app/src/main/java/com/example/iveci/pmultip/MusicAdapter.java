@@ -103,7 +103,19 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             if (item.getItemId() == R.id.addpl) {
-
+                                AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
+                                dlg.setTitle("재생목록에 추가")
+                                        .setIcon(R.drawable.plus)
+                                        .setMessage("이 음악을 추가할 재생목록 선택.")
+                                        .setCancelable(true)
+                                        .setPositiveButton("추가", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                //추가할것
+                                            }
+                                        })
+                                        .setNegativeButton("취소", null)
+                                        .show();
                             }
                             else {
                                 AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
