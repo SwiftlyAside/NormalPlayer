@@ -110,7 +110,19 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                         public boolean onMenuItemClick(MenuItem item) {
                             //재생목록에 추가
                             if (item.getItemId() == R.id.addpl) {
-                                addToPlaylist(getMusicIds().get(viewpos));
+                                getPlaylist();
+                                AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
+                                final ArrayAdapter<Playlist> adapter = new ArrayAdapter<>(itemView.getContext(),
+                                        R.layout.support_simple_spinner_dropdown_item,plist);
+                                dlg.setTitle("음악을 추가할 재생목록 선택.")
+                                        .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Playlist pl = adapter.getItem(which);
+                                                addToPlaylist(getMusicIds().get(viewpos), pl.getId());
+                                            }})
+                                        .setNegativeButton("취소",null)
+                                        .show();
                             }
                             //삭제
                             else {
@@ -136,25 +148,6 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                     return true;
                 }
             });
-        }
-        //선택한 재생목록에 음악을 추가합니다.
-        public void addToPlaylist(final Long musicid) {
-            getPlaylist();
-            AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
-            final ArrayAdapter<Playlist> adapter = new ArrayAdapter<Playlist>(itemView.getContext(),
-                    R.layout.support_simple_spinner_dropdown_item,plist);
-            dlg.setTitle("음악을 추가할 재생목록 선택.")
-                    .setAdapter(adapter, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Playlist pl = adapter.getItem(which);
-                    addToPlaylist(musicid, pl.getId());
-                }})
-                    .setNegativeButton("취소",null)
-                    .show();
-
-
-
         }
 
         //재생목록에 음악을 추가합니다.

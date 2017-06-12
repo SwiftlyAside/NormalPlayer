@@ -7,9 +7,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -207,6 +205,7 @@ public class FragmentPlaylist extends Fragment {
             String[] proj0 = new String[] {MediaStore.Audio.Playlists.Members.AUDIO_ID};
             Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
             if (member.moveToFirst()) {
+                Log.d("COUNT: ",""+member.getCount());
                 String[] proj = new String[] {
                         MediaStore.Audio.Playlists.Members._ID, MediaStore.Audio.Playlists.Members.ALBUM_ID,
                         MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
@@ -214,15 +213,22 @@ public class FragmentPlaylist extends Fragment {
                 String select = MediaStore.Audio.Media._ID + " = ?";
                 long aid = member.getLong(member.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID));
                 String[] arg = {""+aid};
-                return new CursorLoader(getActivity(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                        ,proj,select,arg, null);
+                String order = MediaStore.Audio.Genres.Members.DEFAULT_SORT_ORDER;
+                member.close();
+                return new CursorLoader(getContext(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                        ,proj,select,arg, order);
             }
+            member.close();
             return null;
 
         }
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (data != null && data.getCount() > 0) {
+                data.moveToFirst();
+                Log.d("COUNT: ",data.getCount()+data.getString(data.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE)));
+            }
             playlistAdapter.swapCursor(data);
         }
 
