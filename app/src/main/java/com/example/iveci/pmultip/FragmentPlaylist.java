@@ -60,20 +60,21 @@ public class FragmentPlaylist extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View plView = inflater.inflate(R.layout.fragment_playlist, null);
-        getPlaylist();
         linear = (LinearLayout) plView.findViewById(R.id.linear);
         listView = (ListView) plView.findViewById(R.id.playlist);
         back = (ImageButton) plView.findViewById(R.id.iback);
         recyclerView = (RecyclerView) plView.findViewById(R.id.mplaylist);
         playlisttitle = (TextView) plView.findViewById(R.id.tvtitle);
+        initplaylist();
+        initmembers();
+        return plView;
+    }
+
+    //재생목록UI 초기화
+    public void initplaylist(){
+        getPlaylist();
         adapter = new ArrayAdapter<>(getContext(), R.layout.playlist_dropdown, plist);
         listView.setAdapter(adapter);
-        playlistAdapter = new MusicAdapter(getContext(), null);
-        recyclerView.setAdapter(playlistAdapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
-        //클릭시 재생목록 내용을 보여준다. Explorer
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -100,14 +101,42 @@ public class FragmentPlaylist extends Fragment {
                     playlisttitle.setText(plist.get(position).getName());
                     getPlaylistMember(plist.get(position));
                     playlistAdapter.notifyDataSetChanged();
-
                     Log.d("갱신보냄","");
                     listView.setVisibility(View.INVISIBLE);
                     linear.setVisibility(View.VISIBLE);
-                    //내용 쿼리후 보여줄것
                 }
             }
         });
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
+                dlg.setTitle("재생목록 삭제")
+                        .setIcon(R.drawable.delete)
+                        .setMessage("이 재생목록을 삭제합니다. 계속하시겠습니까?")
+                        .setCancelable(true)
+                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deletePlaylist(plist.get(position));
+                                getPlaylist();
+                                adapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("아니오", null)
+                        .show();
+                return true;
+            }
+        });
+    }
+
+    //재생목록 내용UI 초기화
+    public void initmembers(){
+        playlistAdapter = new MusicAdapter(getContext(), null);
+        recyclerView.setAdapter(playlistAdapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,9 +144,7 @@ public class FragmentPlaylist extends Fragment {
                 linear.setVisibility(View.INVISIBLE);
             }
         });
-        return plView;
     }
-
 
     //모든 재생목록을 가져옵니다.
     public void getPlaylist() {
@@ -139,8 +166,12 @@ public class FragmentPlaylist extends Fragment {
     }
 
     //재생목록을 삭제합니다.
-    public void deletePlaylist(long playlistid) {
-        Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
+    public void deletePlaylist(Playlist pl) {
+        Uri puri = MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI;
+        String where = MediaStore.Audio.Playlists._ID + " = ?";
+        String[] arg = {pl.getId()+""};
+        appContext.getContentResolver().delete(puri, where, arg);
+        Toast.makeText(getContext(),"삭제되었습니다.", Toast.LENGTH_SHORT).show();
     }
 
     //재생목록을 생성합니다. 생성 성공여부를 메시지로 출력합니다.
@@ -175,13 +206,7 @@ public class FragmentPlaylist extends Fragment {
     //선택한 재생목록의 내용을 가져옵니다. 어댑터로 전송.
     public void getPlaylistMember(Playlist pl) {
         pid = pl.getId();
-        recyclerView.setAdapter(playlistAdapter);
         getLoaderManager().initLoader(LOAD, null, plload);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     LoaderManager.LoaderCallbacks<Cursor> plload = new LoaderManager.LoaderCallbacks<Cursor>() {

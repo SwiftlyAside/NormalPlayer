@@ -57,12 +57,6 @@ public class PlayManager {
         return 0;
     }
 
-    //선택한 음악을 삭제합니다. (미구현)
-    public boolean delete(int position){
-
-        return false;
-    }
-
     //음악목록을 불러옵니다.
     public void playList(ArrayList<Long> musics) {
         if (pService != null) pService.getList(musics);

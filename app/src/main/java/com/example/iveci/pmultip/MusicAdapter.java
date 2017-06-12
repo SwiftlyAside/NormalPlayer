@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -41,6 +43,7 @@ import java.util.ArrayList;
  */
 
 public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
+    Context appContext = Tab.getContextOfApplication();
 
     public MusicAdapter(Context context, Cursor cursor) {
         super(context, cursor);
@@ -98,7 +101,8 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                             .setPositiveButton("네", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    MusicApplication.getInstance().getManager().delete(viewpos);
+                                    deleteItem(getMusicIds().get(viewpos));
+                                    notifyDataSetChanged();
                                 }
                             })
                             .setNegativeButton("아니오", null)
@@ -107,6 +111,14 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                 }
             });
         }
+
+        //음악을 삭제합니다.
+        public void deleteItem(long id) {
+            Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+            appContext.getContentResolver().delete(uri,null,null);
+            Toast.makeText(appContext,"삭제하였습니다.", Toast.LENGTH_SHORT).show();
+        }
+
 
         public void setItem(Meta m_meta, int position) {
             meta = m_meta;
