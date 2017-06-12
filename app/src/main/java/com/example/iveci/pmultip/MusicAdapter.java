@@ -138,7 +138,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
             });
         }
         //선택한 재생목록에 음악을 추가합니다.
-        public void addToPlaylist(Long musicid) {
+        public void addToPlaylist(final Long musicid) {
             getPlaylist();
             AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
             final ArrayAdapter<Playlist> adapter = new ArrayAdapter<Playlist>(itemView.getContext(),
@@ -148,7 +148,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Playlist pl = adapter.getItem(which);
-
+                    addToPlaylist(musicid, pl.getId());
                 }})
                     .setNegativeButton("취소",null)
                     .show();
@@ -158,19 +158,23 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         }
 
         //재생목록에 음악을 추가합니다.
-        public void addToPlaylist(String musicid, long playlistid, int position) {
+        public void addToPlaylist(long musicid, long playlistid) {
             Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
+            String[] proj0 = new String[] {MediaStore.Audio.Playlists.Members.PLAY_ORDER};
+            Cursor member = appContext.getContentResolver().query(puri, proj0,null,null,null);
+            int position = member.getCount();
+            Log.d("pos: ",musicid+":"+playlistid+":"+position+"");
             ContentValues values = new ContentValues();
             values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, position);
             values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, musicid);
-            values.put(MediaStore.Audio.Playlists.Members.PLAYLIST_ID, playlistid);
             appContext.getContentResolver().insert(puri, values);
+            appContext.getContentResolver().notifyChange(Uri.parse("content://media"),null);
+            member.close();
         }
 
         //모든 재생목록을 가져옵니다.
         public void getPlaylist() {
             plist.clear();
-            plist.add(new Playlist(-1,"새 재생목록 만들기"));
             String[] proj = {
                     MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME};
             String order = MediaStore.Audio.Playlists.NAME + " COLLATE LOCALIZED ASC";
@@ -180,7 +184,6 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                 for (boolean exists = cursor.moveToFirst(); exists; exists = cursor.moveToNext()) {
                     Playlist pl = Playlist.setByCursor(cursor);
                     plist.add(pl);
-                    Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
                 }
             }
             cursor.close();

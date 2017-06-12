@@ -193,15 +193,6 @@ public class FragmentPlaylist extends Fragment {
         }
     }
 
-    //재생목록에 음악을 추가합니다.
-    public void addToPlaylist(String musicid, long playlistid, int position) {
-        Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER, position);
-        values.put(MediaStore.Audio.Playlists.Members.AUDIO_ID, musicid);
-        values.put(MediaStore.Audio.Playlists.Members.PLAYLIST_ID, playlistid);
-        appContext.getContentResolver().insert(puri, values);
-    }
 
     //선택한 재생목록의 내용을 가져옵니다. 어댑터로 전송.
     public void getPlaylistMember(Playlist pl) {
