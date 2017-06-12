@@ -98,6 +98,8 @@ public class FragmentPlaylist extends Fragment {
                 else {
                     playlisttitle.setText(plist.get(position).getName());
                     getPlaylistMember(plist.get(position));
+                    playlistAdapter.notifyDataSetChanged();
+                    Log.d("갱신보냄","");
                     listView.setVisibility(View.INVISIBLE);
                     linear.setVisibility(View.VISIBLE);
                 }
@@ -193,49 +195,43 @@ public class FragmentPlaylist extends Fragment {
     //선택한 재생목록의 내용을 가져옵니다. 어댑터로 전송.
     public void getPlaylistMember(Playlist pl) {
         pid = pl.getId();
-        Log.d("ID: ",pid+":"+getLoaderManager().hasRunningLoaders()+"");
-        getLoaderManager().initLoader(LOAD, null, new LoaderManager.LoaderCallbacks<Cursor>() {
-            @Override
-            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
-                String[] proj = new String[] {
-                        MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
-                        MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
-                        MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DURATION,
-                        MediaStore.Audio.Playlists.Members.AUDIO_ID};
-                String order = MediaStore.Audio.Genres.Members.DEFAULT_SORT_ORDER;
-                return new CursorLoader(getContext(), uri
-                        ,proj,null,null, order);
-            }
-
-            @Override
-            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-                if (data != null && data.getCount() > 0) {
-                    data.moveToFirst();
-                    Log.d("COUNT: ",data.getCount()+data.getString(data.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE)));
-                }
-                playlistAdapter.swapCursor(data);
-            }
-
-            @Override
-            public void onLoaderReset(Loader<Cursor> loader) {
-                playlistAdapter.swapCursor(null);
-            }
-        });
+        if (!getLoaderManager().hasRunningLoaders()) getLoaderManager().initLoader(LOAD, null, plload);
     }
 
     LoaderManager.LoaderCallbacks<Cursor> plload = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
+            String[] proj0 = new String[] {MediaStore.Audio.Playlists.Members.AUDIO_ID};
+            Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
+            if (member.moveToFirst()) {
+                Log.d("COUNT: ",""+member.getCount());
+                String[] proj = new String[] {
+                        MediaStore.Audio.Playlists.Members._ID, MediaStore.Audio.Playlists.Members.ALBUM_ID,
+                        MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
+                        MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
+                String select = MediaStore.Audio.Media._ID + " = ?";
+                long aid = member.getLong(member.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID));
+                String[] arg = {""+aid};
+                member.close();
+                return new CursorLoader(getContext(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                        ,proj,null,null, null);
+            }
+            member.close();
+            return null;
+/*
+            Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
                 String[] proj = new String[] {
                         MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
                         MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
                         MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DURATION,
                         MediaStore.Audio.Playlists.Members.AUDIO_ID};
+                String select = MediaStore.Audio.Media._ID + " = ?";
                 String order = MediaStore.Audio.Genres.Members.DEFAULT_SORT_ORDER;
                 return new CursorLoader(getContext(), uri
                         ,proj,null,null, order);
+*/
+
         }
 
         @Override
