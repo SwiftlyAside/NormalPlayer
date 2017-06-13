@@ -193,6 +193,7 @@ public class FragmentPlaylist extends Fragment {
 
 
     //선택한 재생목록의 내용을 가져옵니다. 어댑터로 전송.
+    //문제: 왜 LoaderManager는 계속 이전의 Cursor를 가져오는가?
     public void getPlaylistMember(Playlist pl) {
         pid = pl.getId();
         if (!getLoaderManager().hasRunningLoaders()) getLoaderManager().initLoader(LOAD, null, plload);
@@ -220,6 +221,7 @@ public class FragmentPlaylist extends Fragment {
             member.close();
             return null;
 /*
+//
             Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
                 String[] proj = new String[] {
                         MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
