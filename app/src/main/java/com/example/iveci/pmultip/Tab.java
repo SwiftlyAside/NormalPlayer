@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-public class Tab extends AppCompatActivity {
+
+
+public class Tab extends AppCompatActivity{
     TabLayout tabLayout;
     ViewPager viewPager;
     ViewPagerAdapter adapter;
@@ -39,16 +41,15 @@ public class Tab extends AppCompatActivity {
                         new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
             }
         }
-            setContentView(R.layout.activity_tab);
-            tabLayout = (TabLayout) findViewById(R.id.tab);
-            viewPager = (ViewPager) findViewById(R.id.pager);
-            adapter = new ViewPagerAdapter(getSupportFragmentManager());
-            adapter.addFragment("음악", new FragmentExplorer());
-            adapter.addFragment("재생목록", new FragmentPlaylist());
-            viewPager.setAdapter(adapter);
-            tabLayout.setupWithViewPager(viewPager);
+        setContentView(R.layout.activity_tab);
+        tabLayout = (TabLayout) findViewById(R.id.tab);
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment("음악", new FragmentExplorer());
+        adapter.addFragment("재생목록", new FragmentPlaylist());
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
     }
-
 
     public void onClick(View v) {
         switch (v.getId()){
@@ -70,5 +71,4 @@ public class Tab extends AppCompatActivity {
             }
         }
     }
-
 }

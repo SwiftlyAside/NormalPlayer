@@ -4,6 +4,8 @@
 
     <item android:title="재생목록에 추가"
         android:id="@+id/addpl"/>
+    <item android:title="Dropbox에 업로드"
+        android:id="@+id/uploaddbx"/>
     <item android:title="삭제"
         android:id="@+id/del"/>
 </menu>

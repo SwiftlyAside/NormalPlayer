@@ -22,9 +22,18 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.users.FullAccount;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -51,6 +60,7 @@ import java.util.ArrayList;
  */
 
 public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
+    private static final String ACCESS_TOKEN = "qNhWX_R5yuYAAAAAAABAeOW8WMF47obUq70jLSRe9Ye41C_GH0VJ2BpxoeMcB7yY";
     Context appContext = Tab.getContextOfApplication();
 
     public MusicAdapter(Context context, Cursor cursor) {
@@ -123,6 +133,9 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                                             }})
                                         .setNegativeButton("취소",null)
                                         .show();
+                            }
+                            else if (item.getItemId() == R.id.uploaddbx) {
+                                uploadItem(getMusicIds().get(viewpos));
                             }
                             //삭제
                             else {
@@ -203,6 +216,29 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
             }
         }
 
+        //음악을 드롭박스에 업로드합니다.
+        public void uploadItem(long id) {
+            try {
+                DbxRequestConfig config = new DbxRequestConfig("dropbox/normalplayer");
+                DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
+                FullAccount account = client.users().getCurrentAccount();
+                Log.d("CLIENT: ",account.getName().getDisplayName());
+                Cursor cursor;
+                Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+                String[] proj = {MediaStore.Audio.Media.DATA};
+                cursor = appContext.getContentResolver().query(uri, proj,null,null,null);
+                cursor.moveToFirst();
+                String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                InputStream in = new FileInputStream(path);
+                FileMetadata metadata = client.files().uploadBuilder(path).uploadAndFinish(in);
+            } catch (DbxException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         public void setItem(Meta m_meta, int position) {
             meta = m_meta;
