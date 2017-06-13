@@ -10,6 +10,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -112,6 +113,7 @@ public class PlaybackService extends Service {
     //메타데이터로 재생합니다. (서비스 내에서만 사용함)
     private void Play() {
         try {
+            Log.d("",meta.getId()+":"+meta.getTitle());
             Uri musicuri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, meta.getId());
             playback.setDataSource(this, musicuri);
             playback.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -139,12 +141,14 @@ public class PlaybackService extends Service {
     public void setPlay(int position) {
         if (isPlaymode()) {
             meta = m_plmusics.get(position);
+            pos = position;
         }
         else {
             queryMusic(position);
         }
         setStop();
         Play();
+        Log.d("PLAY: ",meta.getId());
         sendBroadcast(new Intent(CHANGE));
     }
 

@@ -43,7 +43,7 @@
                 android:textSize="24sp" />
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
+        <ListView
             android:id="@+id/mplaylist"
             android:textFilterEnabled="true"
             android:layout_width="match_parent"

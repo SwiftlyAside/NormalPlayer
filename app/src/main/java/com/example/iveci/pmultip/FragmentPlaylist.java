@@ -48,10 +48,12 @@ public class FragmentPlaylist extends Fragment {
     LinearLayout linear;
     ImageButton back;
     TextView playlisttitle;
-    ListView listView;
+    ListView listView, metaview;
     RecyclerView recyclerView;
     ArrayList<Playlist> plist =new ArrayList<>();
+    ArrayList<Meta> metas = new ArrayList<>();
     ArrayAdapter<Playlist> adapter;
+    ArrayAdapter<Meta> metaArrayAdapter;
     MusicAdapter playlistAdapter;
 
     @Nullable
@@ -61,7 +63,8 @@ public class FragmentPlaylist extends Fragment {
         linear = (LinearLayout) plView.findViewById(R.id.linear);
         listView = (ListView) plView.findViewById(R.id.playlist);
         back = (ImageButton) plView.findViewById(R.id.iback);
-        recyclerView = (RecyclerView) plView.findViewById(R.id.mplaylist);
+//        recyclerView = (RecyclerView) plView.findViewById(R.id.mplaylist);
+        metaview = (ListView) plView.findViewById(R.id.mplaylist);
         playlisttitle = (TextView) plView.findViewById(R.id.tvtitle);
         initplaylist();
         initmembers();
@@ -98,7 +101,8 @@ public class FragmentPlaylist extends Fragment {
                 else {
                     playlisttitle.setText(plist.get(position).getName());
                     getPlaylistMember(plist.get(position));
-                    playlistAdapter.notifyDataSetChanged();
+//                    playlistAdapter.notifyDataSetChanged();
+                    metaArrayAdapter.notifyDataSetChanged();
                     Log.d("갱신보냄","");
                     listView.setVisibility(View.INVISIBLE);
                     linear.setVisibility(View.VISIBLE);
@@ -130,11 +134,20 @@ public class FragmentPlaylist extends Fragment {
 
     //재생목록 내용UI 초기화
     public void initmembers(){
-        playlistAdapter = new MusicAdapter(getContext(), null);
-        recyclerView.setAdapter(playlistAdapter);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
+//        playlistAdapter = new MusicAdapter(getContext(), null);
+//        recyclerView.setAdapter(playlistAdapter);
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        recyclerView.setLayoutManager(layoutManager);
+        metaArrayAdapter = new ArrayAdapter<Meta>(getContext(), R.layout.playlist_dropdown, metas);
+        metaview.setAdapter(metaArrayAdapter);
+        metaview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MusicApplication.getInstance().getManager().playlistset(metas);
+                MusicApplication.getInstance().getManager().play(position);
+            }
+        });
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,7 +204,46 @@ public class FragmentPlaylist extends Fragment {
         }
     }
 
+    //선택한 재생목록의 내용을 가져옵니다.
+    public void getPlaylistMember(Playlist pl) {
+        metas.clear();
+        pid = pl.getId();
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
+        String[] proj0 = new String[] {
+                MediaStore.Audio.Playlists.Members.AUDIO_ID, MediaStore.Audio.Playlists.Members._ID,
+                MediaStore.Audio.Playlists.Members.ALBUM_ID,
+                MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
+                MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
+        Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
+        if (member.getCount() >= 1) {
+            for (boolean exists = member.moveToFirst(); exists; exists = member.moveToNext()) {
+                Meta meta = Meta.setByCursor(member);
+                metas.add(meta);
+            }
+        }
+        /*if (member.moveToFirst()) {
+            Log.d("COUNT: ",""+member.getCount());
+            String[] proj = new String[] {
+                    MediaStore.Audio.Playlists.Members._ID, MediaStore.Audio.Playlists.Members.ALBUM_ID,
+                    MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
+                    MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
+            String select = MediaStore.Audio.Media._ID + " = ?";
+            long aid = member.getLong(member.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID));
+            String[] arg = {""+aid};
+            Cursor cursor = appContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                    ,proj,select,arg, null);
+            Log.d("COUNT: ",""+cursor.getCount());
+            if (cursor.getCount() >= 1) {
+                for (boolean exists = cursor.moveToFirst(); exists; exists = cursor.moveToNext()) {
+                    Meta meta = Meta.setByCursor(cursor);
+                    metas.add(meta);
+                }
+            }
+            cursor.close();*/
+        member.close();
+    }
 
+/*
     //선택한 재생목록의 내용을 가져옵니다. 어댑터로 전송.
     public void getPlaylistMember(Playlist pl) {
         pid = pl.getId();
@@ -219,7 +271,7 @@ public class FragmentPlaylist extends Fragment {
             }
             member.close();
             return null;
-/*
+*//*
 //
             Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
                 String[] proj = new String[] {
@@ -231,7 +283,7 @@ public class FragmentPlaylist extends Fragment {
                 String order = MediaStore.Audio.Genres.Members.DEFAULT_SORT_ORDER;
                 return new CursorLoader(getContext(), uri
                         ,proj,null,null, order);
-*/
+*//*
 
         }
 
@@ -248,5 +300,5 @@ public class FragmentPlaylist extends Fragment {
         public void onLoaderReset(Loader<Cursor> loader) {
             playlistAdapter.swapCursor(null);
         }
-    };
+    };*/
 }

@@ -175,6 +175,26 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                 }
             });
         }
+ /*       //재생할 음악의 메타데이터를 쿼리합니다.
+        private void queryMusic(int position) {
+            long musicid = getMusicIds().get(position);
+            String[] proj = {
+                    MediaStore.Audio.Media._ID,
+                    MediaStore.Audio.Media.ALBUM_ID,
+                    MediaStore.Audio.Media.TITLE,
+                    MediaStore.Audio.Media.ALBUM,
+                    MediaStore.Audio.Media.ARTIST,
+                    MediaStore.Audio.Media.DURATION};
+            String select = MediaStore.Audio.Media._ID + " = ?";
+            String[] args = {String.valueOf(musicid)};
+            Cursor cursor = appContext.getContentResolver().query(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, proj, select, args, null);
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                Meta meta = Meta.setByCursor(cursor);
+            }
+            cursor.close();
+        }*/
 
         //재생목록에 음악을 추가합니다.
         public void addToPlaylist(long musicid, long playlistid) {
