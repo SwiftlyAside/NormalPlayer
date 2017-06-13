@@ -219,7 +219,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         //음악을 드롭박스에 업로드합니다.
         public void uploadItem(long id) {
             try {
-                DbxRequestConfig config = new DbxRequestConfig("dropbox/normalplayer");
+                DbxRequestConfig config = new DbxRequestConfig("dropbox");
                 DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
                 FullAccount account = client.users().getCurrentAccount();
                 Log.d("CLIENT: ",account.getName().getDisplayName());
