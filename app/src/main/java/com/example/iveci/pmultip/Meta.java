@@ -13,6 +13,10 @@ import java.io.Serializable;
 
 public class Meta implements Serializable {
     private String id;
+
+
+
+    private String memberid;
     private String albumId;
     private String title;
     private String album;
@@ -21,6 +25,9 @@ public class Meta implements Serializable {
 
     public static Meta setByCursor(Cursor cursor) {
         Meta meta = new Meta();
+        if (cursor.getColumnIndex(MediaStore.Audio.Playlists.Members._ID) != -1) {
+            meta.setMemberid(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members._ID)));
+        }
         if (cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID) == -1) {
             meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
         }
@@ -32,7 +39,13 @@ public class Meta implements Serializable {
         meta.setDuration(Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
         return meta;
     }
+    public String getMemberid() {
+        return memberid;
+    }
 
+    public void setMemberid(String memberid) {
+        this.memberid = memberid;
+    }
     public String getId() {
         return id;
     }

@@ -10,11 +10,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,18 +38,15 @@ import java.util.ArrayList;
 
 public class FragmentPlaylist extends Fragment {
     Context appContext = Tab.getContextOfApplication();
-    private final static int LOAD = 0x501;
     long pid;
     LinearLayout linear;
     ImageButton back;
     TextView playlisttitle;
     ListView listView, metaview;
-    RecyclerView recyclerView;
     ArrayList<Playlist> plist =new ArrayList<>();
     ArrayList<Meta> metas = new ArrayList<>();
     ArrayAdapter<Playlist> adapter;
     ArrayAdapter<Meta> metaArrayAdapter;
-    MusicAdapter playlistAdapter;
 
     @Nullable
     @Override
@@ -63,7 +55,6 @@ public class FragmentPlaylist extends Fragment {
         linear = (LinearLayout) plView.findViewById(R.id.linear);
         listView = (ListView) plView.findViewById(R.id.playlist);
         back = (ImageButton) plView.findViewById(R.id.iback);
-//        recyclerView = (RecyclerView) plView.findViewById(R.id.mplaylist);
         metaview = (ListView) plView.findViewById(R.id.mplaylist);
         playlisttitle = (TextView) plView.findViewById(R.id.tvtitle);
         initplaylist();
@@ -101,7 +92,6 @@ public class FragmentPlaylist extends Fragment {
                 else {
                     playlisttitle.setText(plist.get(position).getName());
                     getPlaylistMember(plist.get(position));
-//                    playlistAdapter.notifyDataSetChanged();
                     metaArrayAdapter.notifyDataSetChanged();
                     Log.d("갱신보냄","");
                     listView.setVisibility(View.INVISIBLE);
@@ -112,21 +102,23 @@ public class FragmentPlaylist extends Fragment {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
-                dlg.setTitle("재생목록 삭제")
-                        .setIcon(R.drawable.delete)
-                        .setMessage("이 재생목록을 삭제합니다. 계속하시겠습니까?")
-                        .setCancelable(true)
-                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                deletePlaylist(plist.get(position));
-                                getPlaylist();
-                                adapter.notifyDataSetChanged();
-                            }
-                        })
-                        .setNegativeButton("아니오", null)
-                        .show();
+                if (position != 0) {
+                    AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
+                    dlg.setTitle("재생목록 삭제")
+                            .setIcon(R.drawable.delete)
+                            .setMessage("이 재생목록을 삭제합니다. 계속하시겠습니까?")
+                            .setCancelable(true)
+                            .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    deletePlaylist(plist.get(position));
+                                    getPlaylist();
+                                    adapter.notifyDataSetChanged();
+                                }
+                            })
+                            .setNegativeButton("아니오", null)
+                            .show();
+                }
                 return true;
             }
         });
@@ -134,18 +126,34 @@ public class FragmentPlaylist extends Fragment {
 
     //재생목록 내용UI 초기화
     public void initmembers(){
-//        playlistAdapter = new MusicAdapter(getContext(), null);
-//        recyclerView.setAdapter(playlistAdapter);
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//        recyclerView.setLayoutManager(layoutManager);
-        metaArrayAdapter = new ArrayAdapter<Meta>(getContext(), R.layout.playlist_dropdown, metas);
+        metaArrayAdapter = new ArrayAdapter<>(getContext(), R.layout.playlist_dropdown, metas);
         metaview.setAdapter(metaArrayAdapter);
         metaview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 MusicApplication.getInstance().getManager().playlistset(metas);
                 MusicApplication.getInstance().getManager().play(position);
+            }
+        });
+        metaview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
+                dlg.setTitle("재생목록에서 음악 삭제")
+                        .setIcon(R.drawable.delete)
+                        .setMessage("이 음악을 재생목록에서 삭제합니다. 계속하시겠습니까?")
+                        .setCancelable(true)
+                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deletetrack(pid, metas.get(position));
+                                getPlaylistMember(null);
+                                metaArrayAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("아니오", null)
+                        .show();
+                return true;
             }
         });
         back.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +182,20 @@ public class FragmentPlaylist extends Fragment {
             }
         }
         cursor.close();
+    }
+
+    //재생목록에서 음악을 제거합니다.
+    public void deletetrack(long playlistid, Meta meta) {
+        try {
+            Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
+            String where = MediaStore.Audio.Playlists.Members._ID + " = ?";
+            String audioid = meta.getMemberid();
+            String[] arg = {audioid};
+            appContext.getContentResolver().delete(puri, where, arg);
+            Toast.makeText(getContext(), "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "삭제하지 못했습니다.\n"+ e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     //재생목록을 삭제합니다.
@@ -205,9 +227,9 @@ public class FragmentPlaylist extends Fragment {
     }
 
     //선택한 재생목록의 내용을 가져옵니다.
-    public void getPlaylistMember(Playlist pl) {
+    public void getPlaylistMember(@Nullable Playlist pl) {
         metas.clear();
-        pid = pl.getId();
+        if (pl != null) pid = pl.getId();
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
         String[] proj0 = new String[] {
                 MediaStore.Audio.Playlists.Members.AUDIO_ID, MediaStore.Audio.Playlists.Members._ID,
@@ -222,84 +244,7 @@ public class FragmentPlaylist extends Fragment {
                 metas.add(meta);
             }
         }
-        /*if (member.moveToFirst()) {
-            Log.d("COUNT: ",""+member.getCount());
-            String[] proj = new String[] {
-                    MediaStore.Audio.Playlists.Members._ID, MediaStore.Audio.Playlists.Members.ALBUM_ID,
-                    MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
-                    MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
-            String select = MediaStore.Audio.Media._ID + " = ?";
-            long aid = member.getLong(member.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID));
-            String[] arg = {""+aid};
-            Cursor cursor = appContext.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                    ,proj,select,arg, null);
-            Log.d("COUNT: ",""+cursor.getCount());
-            if (cursor.getCount() >= 1) {
-                for (boolean exists = cursor.moveToFirst(); exists; exists = cursor.moveToNext()) {
-                    Meta meta = Meta.setByCursor(cursor);
-                    metas.add(meta);
-                }
-            }
-            cursor.close();*/
         member.close();
     }
 
-/*
-    //선택한 재생목록의 내용을 가져옵니다. 어댑터로 전송.
-    public void getPlaylistMember(Playlist pl) {
-        pid = pl.getId();
-        if (!getLoaderManager().hasRunningLoaders()) getLoaderManager().initLoader(LOAD, null, plload);
-    }
-
-    LoaderManager.LoaderCallbacks<Cursor> plload = new LoaderManager.LoaderCallbacks<Cursor>() {
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
-            String[] proj0 = new String[] {MediaStore.Audio.Playlists.Members.AUDIO_ID};
-            Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
-            if (member.moveToFirst()) {
-                Log.d("COUNT: ",""+member.getCount());
-                String[] proj = new String[] {
-                        MediaStore.Audio.Playlists.Members._ID, MediaStore.Audio.Playlists.Members.ALBUM_ID,
-                        MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
-                        MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
-                String select = MediaStore.Audio.Media._ID + " = ?";
-                long aid = member.getLong(member.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID));
-                String[] arg = {""+aid};
-                member.close();
-                return new CursorLoader(getContext(), MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                        ,proj,null,null, null);
-            }
-            member.close();
-            return null;
-*//*
-//
-            Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
-                String[] proj = new String[] {
-                        MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
-                        MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
-                        MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DURATION,
-                        MediaStore.Audio.Playlists.Members.AUDIO_ID};
-                String select = MediaStore.Audio.Media._ID + " = ?";
-                String order = MediaStore.Audio.Genres.Members.DEFAULT_SORT_ORDER;
-                return new CursorLoader(getContext(), uri
-                        ,proj,null,null, order);
-*//*
-
-        }
-
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            if (data != null && data.getCount() > 0) {
-                data.moveToFirst();
-                Log.d("COUNT: ",data.getCount()+data.getString(data.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE)));
-            }
-            playlistAdapter.swapCursor(data);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            playlistAdapter.swapCursor(null);
-        }
-    };*/
 }

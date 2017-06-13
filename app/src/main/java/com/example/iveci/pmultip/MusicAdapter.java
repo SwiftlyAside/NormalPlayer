@@ -130,6 +130,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                                             public void onClick(DialogInterface dialog, int which) {
                                                 Playlist pl = adapter.getItem(which);
                                                 addToPlaylist(getMusicIds().get(viewpos), pl.getId());
+                                                Toast.makeText(appContext,pl.getName()+"에 추가했습니다.", Toast.LENGTH_SHORT).show();
                                             }})
                                         .setNegativeButton("취소",null)
                                         .show();
