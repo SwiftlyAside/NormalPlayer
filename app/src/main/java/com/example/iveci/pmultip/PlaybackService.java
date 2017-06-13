@@ -26,9 +26,11 @@ public class PlaybackService extends Service {
     private final IBinder ibinder = new playbackServicebinder();
     private MediaPlayer playback = new MediaPlayer();
     private ArrayList<Long> m_musics = new ArrayList<>();
+    private ArrayList<Meta> m_plmusics = new ArrayList<>();
     private Meta meta;
     private int pos = 0;
     private boolean ready = false;
+    private boolean playlistmode = false;
     public static String CHANGE = "CHANGED";
 
     public class playbackServicebinder extends Binder {
@@ -55,13 +57,25 @@ public class PlaybackService extends Service {
         playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if (pos < m_musics.size() - 1) {
-                    setPlay(++pos);
+                if (isPlaymode()) {
+                    if (pos < m_plmusics.size() - 1) {
+                        setPlay(++pos);
+                    }
+                    else {
+//                    ready = false;
+                        sendBroadcast(new Intent(CHANGE));
+                    }
                 }
                 else {
+                    if (pos < m_musics.size() - 1) {
+                        setPlay(++pos);
+                    }
+                    else {
 //                    ready = false;
-                    sendBroadcast(new Intent(CHANGE));
+                        sendBroadcast(new Intent(CHANGE));
+                    }
                 }
+
             }
         });
         playback.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -72,6 +86,13 @@ public class PlaybackService extends Service {
             }
         });
     }
+
+    //재생목록으로 플레이중인지 여부를 반환합니다.
+    public boolean isPlaymode() {
+        return playlistmode;
+    }
+
+    //
 
     //재생여부를 반환합니다.
     public boolean isPlaying() {
@@ -116,7 +137,12 @@ public class PlaybackService extends Service {
 
     //선택한 위치에 있는 음악을 재생합니다. 플레이어 준비 여부에 관계없이 작동합니다.
     public void setPlay(int position) {
-        queryMusic(position);
+        if (isPlaymode()) {
+            meta = m_plmusics.get(position);
+        }
+        else {
+            queryMusic(position);
+        }
         setStop();
         Play();
         sendBroadcast(new Intent(CHANGE));
@@ -139,7 +165,8 @@ public class PlaybackService extends Service {
     public void setPrev() {
         if ((float) (playback.getCurrentPosition())/(float)(playback.getDuration()) < 0.15) {
             if (pos > 0) pos--;
-            else pos = m_musics.size() - 1;
+            else if (isPlaymode()) pos = m_plmusics.size() - 1;
+            else pos = m_musics.size() -1;
             setPlay(pos);
         }
         else playback.seekTo(0);
@@ -147,11 +174,25 @@ public class PlaybackService extends Service {
 
     //다음 곡으로 갑니다.
     public void setNext() {
-        if (pos < m_musics.size() - 1) pos++;
-        else pos = 0;
+        if (isPlaymode()) {
+            if (pos < m_plmusics.size() -1) pos++;
+            else pos = 0;
+        }
+        else {
+            if (pos < m_musics.size() - 1) pos++;
+            else pos = 0;
+        }
         setPlay(pos);
     }
 
+    //재생목록으로 재생할때 목록을 가져옵니다. 호출시 재생목록모드로 변경됩니다.
+    public void setPl(ArrayList<Meta> metas) {
+        if (!m_plmusics.equals(metas)) {
+            m_plmusics.clear();
+            m_plmusics.addAll(metas);
+        }
+        playlistmode = true;
+    }
 
     //재생할 음악의 메타데이터를 쿼리합니다.
     private void queryMusic(int position) {
@@ -175,12 +216,13 @@ public class PlaybackService extends Service {
         cursor.close();
     }
 
-    //음악의 목록을 변수로 복사합니다.
+    //음악의 목록을 변수로 복사합니다. 호출시 일반재생모드로 변경됩니다.
     public void getList(ArrayList<Long> musics) {
         if (!m_musics.equals(musics)) {
             m_musics.clear();
             m_musics.addAll(musics);
         }
+        playlistmode = false;
     }
 
     @Override

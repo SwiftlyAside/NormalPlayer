@@ -62,6 +62,11 @@ public class PlayManager {
         if (pService != null) pService.getList(musics);
     }
 
+    //음악목록을 불러옵니다.(재생목록용)
+    public void playlistset(ArrayList<Meta> metas) {
+        if (pService != null) pService.setPl(metas);
+    }
+
     public void play(int position) {
         if (pService != null) pService.setPlay(position);
     }
