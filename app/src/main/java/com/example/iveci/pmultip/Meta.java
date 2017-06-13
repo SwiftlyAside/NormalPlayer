@@ -80,13 +80,6 @@ public class Meta implements Serializable {
 
     @Override
     public String toString() {
-        return "Meta{" +
-                "id='" + id + '\'' +
-                ", albumId='" + albumId + '\'' +
-                ", title='" + title + '\'' +
-                ", album='" + album + '\'' +
-                ", artist='" + artist + '\'' +
-                ", duration=" + duration +
-                '}';
+        return artist + " - " +title;
     }
 }
