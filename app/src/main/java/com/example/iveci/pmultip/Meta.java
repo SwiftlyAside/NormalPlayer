@@ -96,6 +96,6 @@ public class Meta implements Serializable {
 
     @Override
     public String toString() {
-        return artist + " - " +title;
+        return  title+" - " +artist;
     }
 }
