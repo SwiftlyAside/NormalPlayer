@@ -248,7 +248,6 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                         String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
                         String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
                         InputStream in = new FileInputStream(path);
-                        Log.d("CLIENT: ",name);
                         FileMetadata metadata = client.files().uploadBuilder("/"+name).uploadAndFinish(in);
                     } catch (DbxException e) {
                         e.printStackTrace();
@@ -260,7 +259,6 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                 }
             });
             thread.start();
-
         }
 
         public void setItem(Meta m_meta, int position) {
