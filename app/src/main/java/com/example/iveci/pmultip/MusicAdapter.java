@@ -135,8 +135,20 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                                         .show();
                             }
                             else if (item.getItemId() == R.id.uploaddbx) {
-                                uploadItem();
-                                Toast.makeText(appContext,"업로드를 완료했습니다.", Toast.LENGTH_SHORT).show();
+                                AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
+                                dlg.setTitle("Dropbox로 업로드")
+                                        .setMessage("이 파일을 업로드합니다. 계속하시겠습니까?")
+                                        .setCancelable(true)
+                                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                uploadItem();
+                                                Toast.makeText(appContext,"업로드를 완료했습니다.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .setNegativeButton("아니오",null)
+                                        .show();
+
                             }
                             //삭제
                             else {
