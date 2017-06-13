@@ -215,6 +215,7 @@ public class FragmentPlaylist extends Fragment {
                 MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
                 MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
         Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
+        Log.d("COUNT: ",""+member.getCount());
         if (member.getCount() >= 1) {
             for (boolean exists = member.moveToFirst(); exists; exists = member.moveToNext()) {
                 Meta meta = Meta.setByCursor(member);
