@@ -146,7 +146,7 @@ public class FragmentPlaylist extends Fragment {
                         .setPositiveButton("네", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                deletetrack(pid, metas.get(position));
+                                deleteTrack(pid, metas.get(position));
                                 getPlaylistMember(null);
                                 metaArrayAdapter.notifyDataSetChanged();
                             }
@@ -185,7 +185,7 @@ public class FragmentPlaylist extends Fragment {
     }
 
     //재생목록에서 음악을 제거합니다.
-    public void deletetrack(long playlistid, Meta meta) {
+    public void deleteTrack(long playlistid, Meta meta) {
         try {
             Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
             String where = MediaStore.Audio.Playlists.Members._ID + " = ?";
