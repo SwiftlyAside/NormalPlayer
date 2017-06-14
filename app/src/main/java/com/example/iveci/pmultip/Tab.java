@@ -3,6 +3,7 @@ package com.example.iveci.pmultip;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.DropBoxManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -12,9 +13,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.dropbox.core.DbxAuthInfo;
+import com.dropbox.core.DbxUploader;
+import com.dropbox.core.android.Auth;
+
+/*
+* Tab
+* 기본 Activity입니다.
+*
+* */
 
 
 public class Tab extends AppCompatActivity{
+
     TabLayout tabLayout;
     ViewPager viewPager;
     ViewPagerAdapter adapter;

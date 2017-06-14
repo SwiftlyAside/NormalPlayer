@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -22,12 +23,16 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dropbox.core.DbxAuthFinish;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.DbxWebAuth;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.android.AuthActivity;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.auth.DbxUserAuthRequests;
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.WriteMode;
 import com.dropbox.core.v2.users.FullAccount;
 import com.squareup.picasso.Picasso;
 
@@ -236,15 +241,12 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
 
         //음악을 드롭박스에 업로드합니다.
         public void uploadItem() {
-
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Cursor cursor = null;
                     final long id = getMusicIds().get(viewpos);
                     try {
-                        Auth.startOAuth2Authentication(appContext,DROP_BOX_APP_KEY);
-                        String s = Auth.getOAuth2Token();
                         DbxRequestConfig config = new DbxRequestConfig("dropbox/java-tutorial");
                         DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
                         FullAccount account = client.users().getCurrentAccount();
@@ -256,7 +258,9 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                         String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
                         String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
                         InputStream in = new FileInputStream(path);
-                        FileMetadata metadata = client.files().uploadBuilder("/"+name).uploadAndFinish(in);
+                        FileMetadata metadata = client.files().uploadBuilder("/"+name)
+                                .withMode(WriteMode.OVERWRITE)
+                                .uploadAndFinish(in);
                     } catch (DbxException e) {
                         e.printStackTrace();
                     } catch (FileNotFoundException e) {
