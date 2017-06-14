@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.android.Auth;
+import com.dropbox.core.android.AuthActivity;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.users.FullAccount;
@@ -235,13 +236,15 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
 
         //음악을 드롭박스에 업로드합니다.
         public void uploadItem() {
-            Auth.startOAuth2Authentication(appContext,DROP_BOX_APP_KEY);
+
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Cursor cursor = null;
                     final long id = getMusicIds().get(viewpos);
                     try {
+                        Auth.startOAuth2Authentication(appContext,DROP_BOX_APP_KEY);
+                        String s = Auth.getOAuth2Token();
                         DbxRequestConfig config = new DbxRequestConfig("dropbox/java-tutorial");
                         DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
                         FullAccount account = client.users().getCurrentAccount();
@@ -254,7 +257,6 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                         String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
                         InputStream in = new FileInputStream(path);
                         FileMetadata metadata = client.files().uploadBuilder("/"+name).uploadAndFinish(in);
-
                     } catch (DbxException e) {
                         e.printStackTrace();
                     } catch (FileNotFoundException e) {
@@ -267,6 +269,8 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                 }
             });
             thread.start();
+
+
         }
 
         public void setItem(Meta m_meta, int position) {
