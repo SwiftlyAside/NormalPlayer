@@ -163,6 +163,8 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                                             public void onClick(DialogInterface dialog, int which) {
                                                 deleteItem(getMusicIds().get(viewpos));
                                                 notifyDataSetChanged();
+                                                MusicApplication.getInstance().getManager().playList(getMusicIds());
+
                                             }
                                         })
                                         .setNegativeButton("아니오", null)
