@@ -2,7 +2,6 @@ package com.example.iveci.pmultip;
 
 import android.database.Cursor;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.io.Serializable;
 

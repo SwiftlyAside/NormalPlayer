@@ -113,7 +113,6 @@ public class PlaybackService extends Service {
     //메타데이터로 재생합니다. (서비스 내에서만 사용함)
     private void Play() {
         try {
-            Log.d("",meta.getId()+":"+meta.getTitle());
             Uri musicuri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, meta.getId());
             playback.setDataSource(this, musicuri);
             playback.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -148,7 +147,6 @@ public class PlaybackService extends Service {
         }
         setStop();
         Play();
-        Log.d("PLAY: ",meta.getId());
         sendBroadcast(new Intent(CHANGE));
     }
 

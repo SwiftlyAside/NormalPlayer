@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by iveci on 2017-06-11.
+ * TabLayout 어댑터.
  */
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {

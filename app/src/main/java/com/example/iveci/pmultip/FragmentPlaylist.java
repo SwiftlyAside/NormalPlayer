@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,7 +92,6 @@ public class FragmentPlaylist extends Fragment {
                     playlisttitle.setText(plist.get(position).getName());
                     getPlaylistMember(plist.get(position));
                     metaArrayAdapter.notifyDataSetChanged();
-                    Log.d("갱신보냄","");
                     listView.setVisibility(View.INVISIBLE);
                     linear.setVisibility(View.VISIBLE);
                 }
@@ -180,7 +178,6 @@ public class FragmentPlaylist extends Fragment {
             for (boolean exists = cursor.moveToFirst(); exists; exists = cursor.moveToNext()) {
                 Playlist pl = Playlist.setByCursor(cursor);
                 plist.add(pl);
-                Log.d("NAME: ",cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));
             }
         }
         cursor.close();
@@ -239,7 +236,6 @@ public class FragmentPlaylist extends Fragment {
                 MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
                 MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
         Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
-        Log.d("COUNT: ",""+member.getCount());
         if (member.getCount() >= 1) {
             for (boolean exists = member.moveToFirst(); exists; exists = member.moveToNext()) {
                 Meta meta = Meta.setByCursor(member);
