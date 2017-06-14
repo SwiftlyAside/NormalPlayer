@@ -106,7 +106,7 @@ public class FragmentPlaylist extends Fragment {
                     AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
                     dlg.setTitle("재생목록 삭제")
                             .setIcon(R.drawable.delete)
-                            .setMessage("이 재생목록을 삭제합니다.\n계속하시겠습니까?")
+                            .setMessage("재생목록 "+plist.get(position)+"을(를) 삭제합니다.\n계속하시겠습니까?")
                             .setCancelable(true)
                             .setPositiveButton("네", new DialogInterface.OnClickListener() {
                                 @Override
@@ -141,7 +141,9 @@ public class FragmentPlaylist extends Fragment {
                 AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
                 dlg.setTitle("재생목록에서 음악 제거")
                         .setIcon(R.drawable.delete)
-                        .setMessage("이 음악을 재생목록에서 제거합니다.\n계속하시겠습니까?")
+                        .setMessage("다음 음악을 재생목록에서 제거합니다.\n\n" +
+                                metas.get(position) +
+                                "\n\n계속하시겠습니까?")
                         .setCancelable(true)
                         .setPositiveButton("네", new DialogInterface.OnClickListener() {
                             @Override
