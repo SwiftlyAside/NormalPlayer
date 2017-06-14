@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.users.FullAccount;
@@ -60,6 +61,8 @@ import java.util.ArrayList;
  */
 
 public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
+    private static final String DROP_BOX_APP_KEY = "31r0voiyhzeaq73";
+    private static final String DROP_BOX_APP_SECRET = "eshhoazadkmxl8r";
     private static final String ACCESS_TOKEN = "qNhWX_R5yuYAAAAAAABAeOW8WMF47obUq70jLSRe9Ye41C_GH0VJ2BpxoeMcB7yY";
     Context appContext = Tab.getContextOfApplication();
 
@@ -176,26 +179,6 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                 }
             });
         }
- /*       //재생할 음악의 메타데이터를 쿼리합니다.
-        private void queryMusic(int position) {
-            long musicid = getMusicIds().get(position);
-            String[] proj = {
-                    MediaStore.Audio.Media._ID,
-                    MediaStore.Audio.Media.ALBUM_ID,
-                    MediaStore.Audio.Media.TITLE,
-                    MediaStore.Audio.Media.ALBUM,
-                    MediaStore.Audio.Media.ARTIST,
-                    MediaStore.Audio.Media.DURATION};
-            String select = MediaStore.Audio.Media._ID + " = ?";
-            String[] args = {String.valueOf(musicid)};
-            Cursor cursor = appContext.getContentResolver().query(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, proj, select, args, null);
-            if (cursor != null && cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                Meta meta = Meta.setByCursor(cursor);
-            }
-            cursor.close();
-        }*/
 
         //재생목록에 음악을 추가합니다.
         public void addToPlaylist(long musicid, long playlistid) {
@@ -252,16 +235,17 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
 
         //음악을 드롭박스에 업로드합니다.
         public void uploadItem() {
+            Auth.startOAuth2Authentication(appContext,DROP_BOX_APP_KEY);
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    Cursor cursor = null;
                     final long id = getMusicIds().get(viewpos);
                     try {
                         DbxRequestConfig config = new DbxRequestConfig("dropbox/java-tutorial");
                         DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
                         FullAccount account = client.users().getCurrentAccount();
                         Log.d("CLIENT: ",account.getName().getDisplayName());
-                        Cursor cursor;
                         Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
                         String[] proj = {MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME};
                         cursor = appContext.getContentResolver().query(uri, proj,null,null,null);
@@ -270,12 +254,15 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                         String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
                         InputStream in = new FileInputStream(path);
                         FileMetadata metadata = client.files().uploadBuilder("/"+name).uploadAndFinish(in);
+
                     } catch (DbxException e) {
                         e.printStackTrace();
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
+                    }finally {
+                        if (cursor != null) cursor.close();
                     }
                 }
             });
