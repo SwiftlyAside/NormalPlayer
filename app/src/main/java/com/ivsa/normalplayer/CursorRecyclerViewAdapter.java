@@ -1,4 +1,4 @@
-package com.example.iveci.pmultip;
+package com.ivsa.normalplayer;
 /*
  * Copyright (C) 2014 skyfish.jy@gmail.com
  *

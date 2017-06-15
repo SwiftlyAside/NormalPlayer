@@ -7,7 +7,7 @@
     android:background="#EEFDFA"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context="com.example.iveci.pmultip.Playback">
+    tools:context="com.example.iveci.nmlplayer.com.ivsa.normalplayer.Playback">
 
     <ImageView
         android:id="@+id/ialbumart"

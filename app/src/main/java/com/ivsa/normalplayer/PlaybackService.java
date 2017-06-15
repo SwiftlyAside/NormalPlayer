@@ -1,4 +1,4 @@
-package com.example.iveci.pmultip;
+package com.ivsa.normalplayer;
 
 import android.app.Service;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;

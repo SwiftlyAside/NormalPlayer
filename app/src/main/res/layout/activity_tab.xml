@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.iveci.pmultip.Tab">
+    tools:context="com.example.iveci.nmlplayer.com.ivsa.normalplayer.Tab">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,7 +26,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="com.example.iveci.pmultip.MiniPlay"
+        android:name="com.ivsa.normalplayer.MiniPlay"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

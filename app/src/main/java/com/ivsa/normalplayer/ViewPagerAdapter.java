@@ -1,4 +1,4 @@
-package com.example.iveci.pmultip;
+package com.ivsa.normalplayer;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
