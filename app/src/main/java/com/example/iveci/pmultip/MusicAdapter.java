@@ -144,7 +144,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 uploadItem();
-                                                Toast.makeText(appContext,"업로드를 완료했습니다.", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(appContext,"업로드 요청을 보냈습니다.\n 네트워크 환경에 따라 시간이 걸릴 수 있습니다.", Toast.LENGTH_SHORT).show();
                                             }
                                         })
                                         .setNegativeButton("아니오",null)
@@ -163,7 +163,6 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                                             public void onClick(DialogInterface dialog, int which) {
                                                 deleteItem(getMusicIds().get(viewpos));
                                                 notifyDataSetChanged();
-                                                MusicApplication.getInstance().getManager().playList(getMusicIds());
 
                                             }
                                         })
