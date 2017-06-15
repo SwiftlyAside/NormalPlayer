@@ -48,9 +48,9 @@ public class MiniPlay extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mini = inflater.inflate(R.layout.fragment_mini, null);
-        album = (ImageView) mini.findViewById(R.id.imalbumart);
-        songname = (TextView) mini.findViewById(R.id.tvmsongn);
-        pp = (ImageButton) mini.findViewById(R.id.implay);
+        album = mini.findViewById(R.id.imalbumart);
+        songname = mini.findViewById(R.id.tvmsongn);
+        pp = mini.findViewById(R.id.implay);
         registerBroadCast();
         refresh();
         return mini;

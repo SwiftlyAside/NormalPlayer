@@ -51,11 +51,11 @@ public class FragmentPlaylist extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View plView = inflater.inflate(R.layout.fragment_playlist, null);
-        linear = (LinearLayout) plView.findViewById(R.id.linear);
-        listView = (ListView) plView.findViewById(R.id.playlist);
-        back = (ImageButton) plView.findViewById(R.id.iback);
-        metaview = (ListView) plView.findViewById(R.id.mplaylist);
-        playlisttitle = (TextView) plView.findViewById(R.id.tvtitle);
+        linear = plView.findViewById(R.id.linear);
+        listView = plView.findViewById(R.id.playlist);
+        back = plView.findViewById(R.id.iback);
+        metaview = plView.findViewById(R.id.mplaylist);
+        playlisttitle = plView.findViewById(R.id.tvtitle);
         initplaylist();
         initmembers();
         return plView;

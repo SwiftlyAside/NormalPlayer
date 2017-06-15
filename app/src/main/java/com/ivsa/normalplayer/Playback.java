@@ -50,7 +50,7 @@ public class Playback extends AppCompatActivity {
     }
 
     //재생중일 때, 탐색바를 움직이는 thread를 생성합니다.
-    class mps extends Thread {
+    private class mps extends Thread {
         @Override
         public void run() {
             while(MusicApplication.getInstance().getManager().isPlaying()){

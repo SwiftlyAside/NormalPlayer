@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Desctiption: 음악의 메타데이터를 가지는 데이터클래스입니다.
  */
 
-public class Meta implements Serializable {
+class Meta implements Serializable {
     private String id;
 
 
@@ -22,7 +22,7 @@ public class Meta implements Serializable {
     private String artist;
     private int duration;
 
-    public static Meta setByCursor(Cursor cursor) {
+    static Meta setByCursor(Cursor cursor) {
         Meta meta = new Meta();
         if (cursor.getColumnIndex(MediaStore.Audio.Playlists.Members._ID) != -1) {
             meta.setMemberid(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members._ID)));

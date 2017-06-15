@@ -22,14 +22,11 @@ import android.widget.Toast;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.WriteMode;
-import com.dropbox.core.v2.users.FullAccount;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -57,13 +54,13 @@ import java.util.ArrayList;
  * limitations under the License.
  */
 
-public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
+class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
     private static final String DROP_BOX_APP_KEY = "31r0voiyhzeaq73";
     private static final String DROP_BOX_APP_SECRET = "eshhoazadkmxl8r";
     private static final String ACCESS_TOKEN = "qNhWX_R5yuYAAAAAAABAeOW8WMF47obUq70jLSRe9Ye41C_GH0VJ2BpxoeMcB7yY";
-    Context appContext = Tab.getContextOfApplication();
+    private Context appContext = Tab.getContextOfApplication();
 
-    public MusicAdapter(Context context, Cursor cursor) {
+    MusicAdapter(Context context, Cursor cursor) {
         super(context, cursor);
     }
 
@@ -80,7 +77,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         ((MusicViewHolder) viewHolder).setItem(meta, cursor.getPosition());
     }
 
-    public ArrayList<Long> getMusicIds() {
+    private ArrayList<Long> getMusicIds() {
         int count = getItemCount();
         ArrayList<Long> musicids =  new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -89,7 +86,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         return musicids;
     }
 
-    public class MusicViewHolder extends RecyclerView.ViewHolder {
+    private class MusicViewHolder extends RecyclerView.ViewHolder {
         private final Uri uri = Uri.parse("content://media/external/audio/albumart/");
         private TextView song, artist;
         private ImageView aAlbumart;
@@ -99,9 +96,9 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
 
         MusicViewHolder(final View itemView) {
             super(itemView);
-            song = (TextView) itemView.findViewById(R.id.tsongname);
-            artist = (TextView) itemView.findViewById(R.id.tartist);
-            aAlbumart = (ImageView) itemView.findViewById(R.id.listalbart);
+            song = itemView.findViewById(R.id.tsongname);
+            artist = itemView.findViewById(R.id.tartist);
+            aAlbumart = itemView.findViewById(R.id.listalbart);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -179,7 +176,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         }
 
         //재생목록에 음악을 추가합니다.
-        public void addToPlaylist(long musicid, long playlistid) {
+        private void addToPlaylist(long musicid, long playlistid) {
             Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
             String[] proj0 = new String[] {MediaStore.Audio.Playlists.Members.PLAY_ORDER};
             Cursor member = appContext.getContentResolver().query(puri, proj0,null,null,null);
@@ -193,7 +190,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         }
 
         //모든 재생목록을 가져옵니다.
-        public void getPlaylist() {
+        private void getPlaylist() {
             plist.clear();
             String[] proj = {
                     MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME};
@@ -211,19 +208,22 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
 
 
         //음악을 삭제합니다.
-        public void deleteItem(long id) {
+        private void deleteItem(long id) {
             Cursor cursor = null;
             try {
                 Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
                 String[] proj = {MediaStore.Audio.Media.DATA};
                 cursor = appContext.getContentResolver().query(uri, proj,null,null,null);
-                cursor.moveToFirst();
-                String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                File file = new File(path);
-                appContext.getContentResolver().delete(uri,null,null);
-                file.delete();
-                Toast.makeText(appContext,"삭제하였습니다.", Toast.LENGTH_SHORT).show();
-            } catch (IllegalArgumentException e) {
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                    File file = new File(path);
+                    appContext.getContentResolver().delete(uri,null,null);
+                    file.delete();
+                    Toast.makeText(appContext,"삭제하였습니다.", Toast.LENGTH_SHORT).show();
+                }
+                else throw new NullPointerException();
+            } catch (IllegalArgumentException | NullPointerException e) {
                 Toast.makeText(appContext,"삭제하지 못했습니다.\n"+e.getMessage(), Toast.LENGTH_SHORT).show();
             } finally {
                 if (cursor != null) cursor.close();
@@ -231,7 +231,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
         }
 
         //음악을 드롭박스에 업로드합니다.
-        public void uploadItem() {
+        private void uploadItem() {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -240,24 +240,21 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
                     try {
                         DbxRequestConfig config = new DbxRequestConfig("dropbox/java-tutorial");
                         DbxClientV2 client = new DbxClientV2(config, ACCESS_TOKEN);
-                        FullAccount account = client.users().getCurrentAccount();
                         Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
                         String[] proj = {MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DISPLAY_NAME};
                         cursor = appContext.getContentResolver().query(uri, proj,null,null,null);
-                        cursor.moveToFirst();
-                        String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                        String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
-                        InputStream in = new FileInputStream(path);
-                        FileMetadata metadata = client.files().uploadBuilder("/"+name)
-                                .withMode(WriteMode.OVERWRITE)
-                                .uploadAndFinish(in);
-                    } catch (DbxException e) {
+                        if (cursor != null) {
+                            cursor.moveToFirst();
+                            String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                            String name = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                            InputStream in = new FileInputStream(path);
+                            client.files().uploadBuilder("/"+name)
+                                    .withMode(WriteMode.OVERWRITE)
+                                    .uploadAndFinish(in);
+                        }
+                    } catch (DbxException | IOException e) {
                         e.printStackTrace();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }finally {
+                    } finally {
                         if (cursor != null) cursor.close();
                     }
                 }
@@ -267,7 +264,7 @@ public class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHol
 
         }
 
-        public void setItem(Meta m_meta, int position) {
+        private void setItem(Meta m_meta, int position) {
             meta = m_meta;
             viewpos = position;
             song.setText(m_meta.getTitle());

@@ -36,7 +36,7 @@ public class FragmentExplorer extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View explorer = inflater.inflate(R.layout.fragment_explorer, null);
         getMeta();
-        rView = (RecyclerView) explorer.findViewById(R.id.mlist);
+        rView = explorer.findViewById(R.id.mlist);
         adapter = new MusicAdapter(getActivity(), null);
         rView.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());

@@ -4,18 +4,20 @@ import android.database.Cursor;
 import android.provider.MediaStore;
 
 /**
- * Created by iveci on 2017-06-11.
+ * Playlist
+ * 재생목록 정보를 담는 데이터클래스입니다.
+ *
  */
 
-public class Playlist {
+class Playlist {
     private long id;
     private String name;
 
-    public Playlist(){
+    private Playlist(){
 
     }
 
-    public Playlist(long id, String name) {
+    Playlist(long id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -36,7 +38,7 @@ public class Playlist {
         this.name = name;
     }
 
-    public static Playlist setByCursor(Cursor cursor) {
+    static Playlist setByCursor(Cursor cursor) {
         Playlist playlist = new Playlist();
         playlist.setId(Long.parseLong(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists._ID))));
         playlist.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.NAME)));

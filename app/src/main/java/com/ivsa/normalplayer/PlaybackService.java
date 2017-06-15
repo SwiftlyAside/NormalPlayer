@@ -3,7 +3,7 @@ package com.ivsa.normalplayer;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
-import android.media.AudioManager;
+import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -33,7 +33,7 @@ public class PlaybackService extends Service {
     private boolean playlistmode = false;
     public static String CHANGE = "CHANGED";
 
-    public class playbackServicebinder extends Binder {
+    class playbackServicebinder extends Binder {
         PlaybackService getService() {
             return PlaybackService.this;
         }
@@ -114,7 +114,10 @@ public class PlaybackService extends Service {
         try {
             Uri musicuri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, meta.getId());
             playback.setDataSource(this, musicuri);
-            playback.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            playback.setAudioAttributes(new AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .build());
             playback.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
