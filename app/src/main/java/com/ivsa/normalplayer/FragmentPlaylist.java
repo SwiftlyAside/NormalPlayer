@@ -188,7 +188,7 @@ public class FragmentPlaylist extends Fragment {
         try {
             Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
             String where = MediaStore.Audio.Playlists.Members._ID + " = ?";
-            String audioid = meta.getMemberid();
+            String audioid = meta.memberid;
             String[] arg = {audioid};
             appContext.getContentResolver().delete(puri, where, arg);
             Toast.makeText(getContext(), "제거되었습니다.", Toast.LENGTH_SHORT).show();

@@ -67,9 +67,9 @@ public class MiniPlay extends Fragment {
         }
         Meta meta = MusicApplication.getInstance().getManager().getMeta();
         if (meta != null) {
-            Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.getAlbumId()));
+            Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.albumId));
             Picasso.with(getContext()).load(albumart).error(R.drawable.nothing).into(album);
-            songname.setText(meta.getTitle());
+            songname.setText(meta.title);
         }
         else {
             album.setImageResource(R.drawable.nothing);

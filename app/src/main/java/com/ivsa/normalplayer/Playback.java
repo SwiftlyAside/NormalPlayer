@@ -115,11 +115,11 @@ public class Playback extends AppCompatActivity {
         }
         Meta meta = MusicApplication.getInstance().getManager().getMeta();
         if (meta != null) {
-            Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.getAlbumId()));
+            Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.albumId));
             Picasso.with(getApplicationContext()).load(albumart).error(R.drawable.nothing).into(album);
-            sinfo.setText(meta.getTitle());
-            ainfo.setText(meta.getArtist() + " - " + meta.getAlbum());
-            int epos = meta.getDuration();
+            sinfo.setText(meta.title);
+            ainfo.setText(meta.artist + " - " + meta.album);
+            int epos = meta.duration;
             timeseek.setProgress(MusicApplication.getInstance().getManager().getCurrent());
             timeseek.setMax(epos);
             endpos.setText(DateFormat.format("mm:ss", epos));

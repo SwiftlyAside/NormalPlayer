@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.*;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -267,9 +268,9 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
         private void setItem(Meta m_meta, int position) {
             meta = m_meta;
             viewpos = position;
-            song.setText(m_meta.getTitle());
-            artist.setText(m_meta.getArtist());
-            Uri albumart = ContentUris.withAppendedId(uri, Long.parseLong(m_meta.getAlbumId()));
+            song.setText(m_meta.title);
+            artist.setText(m_meta.artist);
+            Uri albumart = ContentUris.withAppendedId(uri, Long.parseLong(m_meta.albumId));
             Picasso.with(itemView.getContext())
                     .load(albumart)
                     .error(R.drawable.nothing)
