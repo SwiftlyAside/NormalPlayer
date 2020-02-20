@@ -1,6 +1,5 @@
 package com.ivsa.normalplayer;
 
-import android.app.AlertDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,9 +7,8 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.*;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +17,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
@@ -103,8 +103,8 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MusicApplication.getInstance().getManager().playList(getMusicIds());
-                    MusicApplication.getInstance().getManager().play(viewpos);
+                    MusicApplication.getInstance().manager.playList(getMusicIds());
+                    MusicApplication.getInstance().manager.play(viewpos);
                 }
             });
             //항목을 길게 누르면 나오는 메뉴 추가.
@@ -119,7 +119,7 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
                             //재생목록에 추가
                             if (item.getItemId() == R.id.addpl) {
                                 getPlaylist();
-                                AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
+                                androidx.appcompat.app.AlertDialog.Builder dlg = new androidx.appcompat.app.AlertDialog.Builder(itemView.getContext());
                                 final ArrayAdapter<Playlist> adapter = new ArrayAdapter<>(itemView.getContext(),
                                         R.layout.support_simple_spinner_dropdown_item,plist);
                                 dlg.setTitle("음악을 추가할 재생목록 선택.")
@@ -134,7 +134,7 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
                                         .show();
                             }
                             else if (item.getItemId() == R.id.uploaddbx) {
-                                AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
+                                androidx.appcompat.app.AlertDialog.Builder dlg = new androidx.appcompat.app.AlertDialog.Builder(itemView.getContext());
                                 dlg.setTitle("Dropbox로 업로드")
                                         .setMessage("이 파일을 업로드합니다. 계속하시겠습니까?")
                                         .setCancelable(true)
@@ -151,7 +151,7 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
                             }
                             //삭제
                             else {
-                                AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
+                                AlertDialog.Builder dlg = new androidx.appcompat.app.AlertDialog.Builder(itemView.getContext());
                                 dlg.setTitle("음악 삭제")
                                         .setIcon(R.drawable.delete)
                                         .setMessage("이 음악을 삭제합니다. 계속하시겠습니까?")

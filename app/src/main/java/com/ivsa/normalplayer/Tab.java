@@ -4,15 +4,15 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
+import com.google.android.material.tabs.TabLayout;
 
 
 
@@ -41,7 +41,7 @@ public class Tab extends AppCompatActivity{
         contextOfApplication = getApplicationContext();
         tabLayout = (TabLayout) findViewById(R.id.tab);
         viewPager = (ViewPager) findViewById(R.id.pager);
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getFragmentManager());
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -93,12 +93,12 @@ public class Tab extends AppCompatActivity{
             }
             //재생, 일시정지
             case R.id.implay :{
-                MusicApplication.getInstance().getManager().toggle();
+                MusicApplication.getInstance().manager.toggle();
                 break;
             }
             //다음 곡
             case R.id.imnext :{
-                MusicApplication.getInstance().getManager().next();
+                MusicApplication.getInstance().manager.next();
                 break;
             }
         }

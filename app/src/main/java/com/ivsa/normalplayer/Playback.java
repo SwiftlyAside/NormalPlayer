@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -53,8 +53,8 @@ public class Playback extends AppCompatActivity {
     private class mps extends Thread {
         @Override
         public void run() {
-            while(MusicApplication.getInstance().getManager().isPlaying()){
-                final int spos = MusicApplication.getInstance().getManager().getCurrent();
+            while(MusicApplication.getInstance().manager.isPlaying()){
+                final int spos = MusicApplication.getInstance().manager.getCurrent();
                 timeseek.setProgress(spos);
                 try {
                     sleep(300); //탐색바 갱신주기(ms단위). (100~1000) 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
@@ -99,28 +99,28 @@ public class Playback extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                MusicApplication.getInstance().getManager().seekTo(seekBar.getProgress());
+                MusicApplication.getInstance().manager.seekTo(seekBar.getProgress());
             }
         });
     }
 
     //UI를 새로고칩니다.
     public void refresh() {
-        if (MusicApplication.getInstance().getManager().isPlaying()) {
+        if (MusicApplication.getInstance().manager.isPlaying()) {
             iplay.setImageResource(R.drawable.pause);
         }
         else {
             iplay.setImageResource(R.drawable.play);
 
         }
-        Meta meta = MusicApplication.getInstance().getManager().getMeta();
+        Meta meta = MusicApplication.getInstance().manager.getMeta();
         if (meta != null) {
             Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.albumId));
             Picasso.with(getApplicationContext()).load(albumart).error(R.drawable.nothing).into(album);
             sinfo.setText(meta.title);
             ainfo.setText(meta.artist + " - " + meta.album);
             int epos = meta.duration;
-            timeseek.setProgress(MusicApplication.getInstance().getManager().getCurrent());
+            timeseek.setProgress(MusicApplication.getInstance().manager.getCurrent());
             timeseek.setMax(epos);
             endpos.setText(DateFormat.format("mm:ss", epos));
             new mps().start();
@@ -134,17 +134,17 @@ public class Playback extends AppCompatActivity {
         switch (v.getId()){
             //이전 곡
             case R.id.bprev :{
-                MusicApplication.getInstance().getManager().prev();
+                MusicApplication.getInstance().manager.prev();
                 break;
             }
             //재생, 일시정지
             case R.id.bstst :{
-                MusicApplication.getInstance().getManager().toggle();
+                MusicApplication.getInstance().manager.toggle();
                 break;
             }
             //다음 곡
             case R.id.bnext :{
-                MusicApplication.getInstance().getManager().next();
+                MusicApplication.getInstance().manager.next();
                 break;
             }
             case R.id.repeat :{

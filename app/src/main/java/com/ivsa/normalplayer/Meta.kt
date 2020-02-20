@@ -9,7 +9,7 @@ import java.io.Serializable
  * Refactored by iveci on 2020-02-20.
  * Desctiption: 음악의 메타데이터를 가지는 데이터클래스입니다.
  */
-internal class Meta : Serializable {
+class Meta : Serializable {
     var id: String? = null
     var memberid: String? = null
     var albumId: String? = null
