@@ -1,7 +1,9 @@
 package com.ivsa.normalplayer
 
 import android.database.Cursor
+import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import java.io.Serializable
 
 /**
@@ -23,6 +25,8 @@ class Meta : Serializable {
     }
 
     companion object {
+        // TODO: API 하한 버전 체크할것. (MINIMUM TO Q)
+        @RequiresApi(Build.VERSION_CODES.Q)
         @JvmStatic
         fun setByCursor(cursor: Cursor): Meta {
             val meta = Meta()
