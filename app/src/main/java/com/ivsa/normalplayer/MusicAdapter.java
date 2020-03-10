@@ -6,9 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +17,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
@@ -72,6 +74,7 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
     }
 
     //RecyclerView 정보를 갱신합니다.
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, Cursor cursor) {
         Meta meta = Meta.setByCursor(cursor);
@@ -268,9 +271,9 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
         private void setItem(Meta m_meta, int position) {
             meta = m_meta;
             viewpos = position;
-            song.setText(m_meta.title);
-            artist.setText(m_meta.artist);
-            Uri albumart = ContentUris.withAppendedId(uri, Long.parseLong(m_meta.albumId));
+            song.setText(m_meta.getTitle());
+            artist.setText(m_meta.getArtist());
+            Uri albumart = ContentUris.withAppendedId(uri, Long.parseLong(m_meta.getAlbumId()));
             Picasso.with(itemView.getContext())
                     .load(albumart)
                     .error(R.drawable.nothing)

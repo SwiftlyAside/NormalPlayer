@@ -47,12 +47,12 @@ class MiniPlay : Fragment() {
 
     //UI를 새로고칩니다.
     fun refresh() {
-        if (MusicApplication.instance.manager.isPlaying) {
+        if (MusicApplication.instance?.manager?.isPlaying!!) {
             pp!!.setImageResource(R.drawable.pause)
         } else {
             pp!!.setImageResource(R.drawable.play)
         }
-        val meta = MusicApplication.instance.manager.meta
+        val meta = MusicApplication.instance?.manager?.meta
         if (meta != null) {
             val albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), meta.albumId!!.toLong())
             Picasso.get().load(albumart).error(R.drawable.nothing).into(album)

@@ -6,9 +6,11 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import com.ivsa.normalplayer.Meta.Companion.setByCursor
 import java.io.IOException
 import java.util.*
@@ -39,6 +41,7 @@ class PlaybackService : Service() {
             get() = this@PlaybackService
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate() {
         super.onCreate()
         player!!.setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
@@ -105,6 +108,7 @@ class PlaybackService : Service() {
     }
 
     //선택한 위치에 있는 음악을 재생합니다. 플레이어 준비 여부에 관계없이 작동합니다.
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun setPlay(position: Int) {
         if (isPlaymode) {
             meta = musicsOnPlaylist[position]
@@ -131,6 +135,7 @@ class PlaybackService : Service() {
     }
 
     //이전 곡 또는 처음위치로 갑니다.
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun setPrev() {
         if (player!!.currentPosition.toFloat() / player!!.duration.toFloat() < 0.15) {
             if (pos > 0) pos-- else if (isPlaymode) pos = musicsOnPlaylist.size - 1 else pos = musicsOnList.size - 1
@@ -139,6 +144,7 @@ class PlaybackService : Service() {
     }
 
     //다음 곡으로 갑니다.
+    @RequiresApi(Build.VERSION_CODES.Q)
     fun setNext() {
         if (isPlaymode) {
             if (pos < musicsOnPlaylist.size - 1) pos++ else pos = 0
@@ -158,6 +164,7 @@ class PlaybackService : Service() {
     }
 
     //재생할 음악의 메타데이터를 쿼리합니다.
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun queryMusic(position: Int) {
         val musicid = musicsOnList[position]
         pos = position
