@@ -1,5 +1,6 @@
 package com.ivsa.normalplayer;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,8 +8,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 
@@ -72,7 +71,7 @@ public class FragmentPlaylist extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
                     final EditText listname = new EditText(getContext());
-                    androidx.appcompat.app.AlertDialog.Builder dlg = new androidx.appcompat.app.AlertDialog.Builder(getContext());
+                    AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
                     dlg.setIcon(R.drawable.plus)
                             .setTitle("재생목록 생성")
                             .setMessage("\n생성할 재생목록 이름을 입력하세요.")
@@ -102,7 +101,7 @@ public class FragmentPlaylist extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 if (position != 0) {
-                    androidx.appcompat.app.AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
+                    AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
                     dlg.setTitle("재생목록 삭제")
                             .setIcon(R.drawable.delete)
                             .setMessage("재생목록 "+plist.get(position)+"을(를) 삭제합니다.\n계속하시겠습니까?")
@@ -130,14 +129,14 @@ public class FragmentPlaylist extends Fragment {
         metaview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MusicApplication.getInstance().manager.playlistset(metas);
-                MusicApplication.getInstance().manager.play(position);
+                MusicApplication.getInstance().getManager().playlistset(metas);
+                MusicApplication.getInstance().getManager().play(position);
             }
         });
         metaview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                androidx.appcompat.app.AlertDialog.Builder dlg = new androidx.appcompat.app.AlertDialog.Builder(getContext());
+                AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
                 dlg.setTitle("재생목록에서 음악 제거")
                         .setIcon(R.drawable.delete)
                         .setMessage("다음 음악을 재생목록에서 제거합니다.\n\n" +
@@ -237,6 +236,7 @@ public class FragmentPlaylist extends Fragment {
                 MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
                 MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
         Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
+        assert member != null;
         if (member.getCount() >= 1) {
             for (boolean exists = member.moveToFirst(); exists; exists = member.moveToNext()) {
                 Meta meta = Meta.setByCursor(member);

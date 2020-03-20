@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import androidx.appcompat.app.AppCompatActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -35,7 +35,7 @@ public class Playback extends AppCompatActivity {
     SeekBar timeseek;
     TextView sinfo, ainfo, nowpos, endpos;
 
-    //PlaybackService로부터 메시지를 받습니다.
+    // PlaybackService로부터 메시지를 받습니다.
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -49,12 +49,12 @@ public class Playback extends AppCompatActivity {
         registerReceiver(broadcastReceiver, filter);
     }
 
-    //재생중일 때, 탐색바를 움직이는 thread를 생성합니다.
+    // 재생중일 때, 탐색바를 움직이는 thread를 생성합니다.
     private class mps extends Thread {
         @Override
         public void run() {
-            while(MusicApplication.getInstance().manager.isPlaying()){
-                final int spos = MusicApplication.getInstance().manager.getCurrent();
+            while(MusicApplication.getInstance().getManager().isPlaying()){
+                final int spos = MusicApplication.getInstance().getManager().getCurrent();
                 timeseek.setProgress(spos);
                 try {
                     sleep(300); //탐색바 갱신주기(ms단위). (100~1000) 짧으면 리소스사용량 상승, 길면 반응지연시간 상승.
@@ -99,28 +99,29 @@ public class Playback extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                MusicApplication.getInstance().manager.seekTo(seekBar.getProgress());
+                MusicApplication.getInstance().getManager().seekTo(seekBar.getProgress());
             }
         });
     }
 
-    //UI를 새로고칩니다.
+    // UI를 새로고칩니다.
     public void refresh() {
-        if (MusicApplication.getInstance().manager.isPlaying()) {
+        if (MusicApplication.getInstance().getManager().isPlaying()) {
             iplay.setImageResource(R.drawable.pause);
         }
         else {
             iplay.setImageResource(R.drawable.play);
 
         }
-        Meta meta = MusicApplication.getInstance().manager.getMeta();
+        Meta meta = MusicApplication.getInstance().getManager().getMeta();
         if (meta != null) {
-            Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.albumId));
+            Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.getAlbumId()));
             Picasso.with(getApplicationContext()).load(albumart).error(R.drawable.nothing).into(album);
-            sinfo.setText(meta.title);
-            ainfo.setText(meta.artist + " - " + meta.album);
-            int epos = meta.duration;
-            timeseek.setProgress(MusicApplication.getInstance().manager.getCurrent());
+            sinfo.setText(meta.getTitle());
+            // Artist - AlbumName 출력
+            ainfo.setText(String.format(getResources().getString(R.string.artistinfo), meta.getArtist(), meta.getAlbum()));
+            int epos = meta.getDuration();
+            timeseek.setProgress(MusicApplication.getInstance().getManager().getCurrent());
             timeseek.setMax(epos);
             endpos.setText(DateFormat.format("mm:ss", epos));
             new mps().start();
@@ -128,23 +129,23 @@ public class Playback extends AppCompatActivity {
         else finish();
     }
 
-    //플레이어 제어
+    // 플레이어 제어
 
     public void onClick(View v){
         switch (v.getId()){
             //이전 곡
             case R.id.bprev :{
-                MusicApplication.getInstance().manager.prev();
+                MusicApplication.getInstance().getManager().prev();
                 break;
             }
             //재생, 일시정지
             case R.id.bstst :{
-                MusicApplication.getInstance().manager.toggle();
+                MusicApplication.getInstance().getManager().toggle();
                 break;
             }
             //다음 곡
             case R.id.bnext :{
-                MusicApplication.getInstance().manager.next();
+                MusicApplication.getInstance().getManager().next();
                 break;
             }
             case R.id.repeat :{

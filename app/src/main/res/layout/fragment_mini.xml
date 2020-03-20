@@ -23,7 +23,7 @@
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/nothing" />
+            android:src="@drawable/nothing" />
 
         <TextView
             android:id="@+id/tvmsongn"
@@ -44,7 +44,7 @@
             android:layout_height="50dp"
             android:background="?attr/selectableItemBackground"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/play" />
+            android:src="@drawable/play" />
 
         <ImageButton
             android:id="@+id/imnext"
@@ -53,7 +53,7 @@
             android:layout_height="50dp"
             android:background="?attr/selectableItemBackground"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/next" />
+            android:src="@drawable/next" />
 
     </LinearLayout>
 

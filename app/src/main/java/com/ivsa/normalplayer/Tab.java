@@ -4,15 +4,15 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
+import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
-import com.google.android.material.tabs.TabLayout;
 
 
 
@@ -41,7 +41,7 @@ public class Tab extends AppCompatActivity{
         contextOfApplication = getApplicationContext();
         tabLayout = (TabLayout) findViewById(R.id.tab);
         viewPager = (ViewPager) findViewById(R.id.pager);
-        adapter = new ViewPagerAdapter(getFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -70,15 +70,12 @@ public class Tab extends AppCompatActivity{
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_WRITE : {
-                if (grantResults.length > 0  && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    adapter.addFragment("음악", new FragmentExplorer());
-                    adapter.addFragment("재생목록", new FragmentPlaylist());
-                    viewPager.setAdapter(adapter);
-                    tabLayout.setupWithViewPager(viewPager);
-                    break;
-                }
+        if (requestCode == PERMISSION_WRITE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                adapter.addFragment("음악", new FragmentExplorer());
+                adapter.addFragment("재생목록", new FragmentPlaylist());
+                viewPager.setAdapter(adapter);
+                tabLayout.setupWithViewPager(viewPager);
             }
         }
     }
@@ -93,12 +90,12 @@ public class Tab extends AppCompatActivity{
             }
             //재생, 일시정지
             case R.id.implay :{
-                MusicApplication.getInstance().manager.toggle();
+                MusicApplication.getInstance().getManager().toggle();
                 break;
             }
             //다음 곡
             case R.id.imnext :{
-                MusicApplication.getInstance().manager.next();
+                MusicApplication.getInstance().getManager().next();
                 break;
             }
         }

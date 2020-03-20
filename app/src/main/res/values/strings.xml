@@ -3,4 +3,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="artistinfo">%s - %s</string>
+    <string name="prev">Prev</string>
+    <string name="todo">TODO</string>
+    <string name="next">Next</string>
 </resources>
