@@ -8,8 +8,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +16,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
@@ -55,9 +56,8 @@ import java.util.ArrayList;
  */
 
 class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
-    private static final String DROP_BOX_APP_KEY = "31r0voiyhzeaq73";
-    private static final String DROP_BOX_APP_SECRET = "eshhoazadkmxl8r";
     private static final String ACCESS_TOKEN = "qNhWX_R5yuYAAAAAAABAeOW8WMF47obUq70jLSRe9Ye41C_GH0VJ2BpxoeMcB7yY";
+    //
     private Context appContext = Tab.getContextOfApplication();
 
     MusicAdapter(Context context, Cursor cursor) {
@@ -270,7 +270,7 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
             song.setText(m_meta.getTitle());
             artist.setText(m_meta.getArtist());
             Uri albumart = ContentUris.withAppendedId(uri, Long.parseLong(m_meta.getAlbumId()));
-            Picasso.with(itemView.getContext())
+            Picasso.get()
                     .load(albumart)
                     .error(R.drawable.nothing)
                     .into(aAlbumart);

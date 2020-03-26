@@ -2,29 +2,30 @@ package com.ivsa.normalplayer;
 
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 
 /*
-* Explorer
-* Description:
-* 이 Activity는 음악(곡명순) 탐색 UI입니다.
-*
-* Functions:
-* 음악목록 표시
-*
-* */
+ * Explorer
+ * Description:
+ * 이 Activity는 음악(곡명순) 탐색 UI입니다.
+ *
+ * Functions:
+ * 음악목록 표시
+ *
+ * */
 
 public class FragmentExplorer extends Fragment {
     private final static int LOAD = 0x907;
