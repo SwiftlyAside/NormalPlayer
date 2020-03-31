@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class PlayManager {
     ServiceConnection serviceConnection;
     PlaybackService pService;
+
     public PlayManager(Context context) {
         serviceConnection = new ServiceConnection() {
             @Override
@@ -83,4 +84,14 @@ public class PlayManager {
     public void prev() {
         if (pService != null && pService.getMeta() != null) pService.setPrev();
     }
+
+    public void loop() {
+        if (pService != null) pService.setLooping();
+    }
+
+    public void shuffle() {
+        if (pService != null) pService.setShuffle();
+    }
+
+
 }
