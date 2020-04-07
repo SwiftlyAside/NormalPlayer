@@ -47,16 +47,17 @@ public class FragmentExplorer extends Fragment {
     }
 
     public void getMeta() { //로컬 미디어 데이터베이스에서 음악의 메타데이터를 가져옵니다. 어댑터로 전송
-        getLoaderManager().initLoader(LOAD, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+//        getLoaderManager() is deprecated
+        LoaderManager.getInstance(this).initLoader(LOAD, null, new LoaderManager.LoaderCallbacks<Cursor>() {
             @Override
             public Loader<Cursor> onCreateLoader(int id, Bundle args) {
                 Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                 String[] proj = {
-                        MediaStore.Audio.Media._ID,     MediaStore.Audio.Media.ALBUM_ID,
-                        MediaStore.Audio.Media.TITLE,   MediaStore.Audio.Media.ALBUM,
-                        MediaStore.Audio.Media.ARTIST,  MediaStore.Audio.Media.DURATION};
+                        MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID,
+                        MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
+                        MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DURATION};
                 String select = MediaStore.Audio.Media.IS_MUSIC + " = 1";
-                String order  = MediaStore.Audio.Media.TITLE + " COLLATE LOCALIZED ASC";
+                String order = MediaStore.Audio.Media.TITLE + " COLLATE LOCALIZED ASC";
                 return new CursorLoader(getContext(),
                         uri, proj, select, null, order);
             }

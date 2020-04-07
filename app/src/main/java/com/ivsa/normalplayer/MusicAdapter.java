@@ -129,16 +129,6 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
                                         .show();
                             }
 
-                            // Dropbox (비활성)
-                            else if (item.getItemId() == R.id.uploaddbx) {
-                                AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());
-                                dlg.setTitle("Dropbox로 업로드")
-                                        .setMessage("사용할 수 없는 기능.")
-                                        .setCancelable(true)
-                                        .setNeutralButton("확인", null)
-                                        .show();
-                            }
-
                             //삭제
                             else {
                                 AlertDialog.Builder dlg = new AlertDialog.Builder(itemView.getContext());

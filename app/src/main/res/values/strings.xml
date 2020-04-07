@@ -7,4 +7,6 @@
     <string name="prev">Prev</string>
     <string name="todo">TODO</string>
     <string name="next">Next</string>
+    <string name="addToPlaylist">재생목록에 추가</string>
+    <string name="delete">삭제</string>
 </resources>
