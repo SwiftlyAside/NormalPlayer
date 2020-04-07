@@ -189,7 +189,7 @@ public class FragmentPlaylist extends Fragment {
         try {
             Uri puri = MediaStore.Audio.Playlists.Members.getContentUri("external", playlistid);
             String where = MediaStore.Audio.Playlists.Members._ID + " = ?";
-            String audioid = meta.getMemberid();
+            String audioid = meta.getMemberId();
             String[] arg = {audioid};
             appContext.getContentResolver().delete(puri, where, arg);
             Toast.makeText(getContext(), "제거되었습니다.", Toast.LENGTH_SHORT).show();
@@ -231,12 +231,12 @@ public class FragmentPlaylist extends Fragment {
         metas.clear();
         if (pl != null) pid = pl.getId();
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external", pid);
-        String[] proj0 = new String[] {
+        String[] project = new String[]{
                 MediaStore.Audio.Playlists.Members.AUDIO_ID, MediaStore.Audio.Playlists.Members._ID,
                 MediaStore.Audio.Playlists.Members.ALBUM_ID,
                 MediaStore.Audio.Playlists.Members.TITLE, MediaStore.Audio.Playlists.Members.ALBUM,
                 MediaStore.Audio.Playlists.Members.ARTIST, MediaStore.Audio.Playlists.Members.DURATION};
-        Cursor member = appContext.getContentResolver().query(uri, proj0,null,null,null);
+        Cursor member = appContext.getContentResolver().query(uri, project, null, null, null);
         assert member != null;
         if (member.getCount() >= 1) {
             for (boolean exists = member.moveToFirst(); exists; exists = member.moveToNext()) {

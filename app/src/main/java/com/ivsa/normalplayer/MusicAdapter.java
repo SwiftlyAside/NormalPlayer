@@ -215,9 +215,9 @@ class MusicAdapter extends CursorRecyclerViewAdapter<RecyclerView.ViewHolder> {
             viewpos = position;
             song.setText(m_meta.getTitle());
             artist.setText(m_meta.getArtist());
-            Uri albumart = ContentUris.withAppendedId(uri, Long.parseLong(m_meta.getAlbumId()));
+            Uri albumArt = ContentUris.withAppendedId(uri, Long.parseLong(m_meta.getAlbumId()));
             Picasso.get()
-                    .load(albumart)
+                    .load(albumArt)
                     .error(R.drawable.nothing)
                     .into(aAlbumart);
         }

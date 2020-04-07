@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 class Meta implements Serializable {
     private String id;
-    private String memberid;
+    private String memberId;
     private String albumId;
     private String title;
     private String album;
@@ -22,12 +22,12 @@ class Meta implements Serializable {
     static Meta setByCursor(Cursor cursor) {
         Meta meta = new Meta();
         if (cursor.getColumnIndex(MediaStore.Audio.Playlists.Members._ID) != -1) {
-            meta.setMemberid(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members._ID)));
+            meta.setMemberId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members._ID)));
         }
         if (cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID) == -1) {
             meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
-        }
-        else meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID)));
+        } else
+            meta.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID)));
         meta.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
         meta.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
         meta.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
@@ -35,13 +35,15 @@ class Meta implements Serializable {
         meta.setDuration(Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))));
         return meta;
     }
-    public String getMemberid() {
-        return memberid;
+
+    public String getMemberId() {
+        return memberId;
     }
 
-    public void setMemberid(String memberid) {
-        this.memberid = memberid;
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
+
     public String getId() {
         return id;
     }
@@ -92,6 +94,6 @@ class Meta implements Serializable {
 
     @Override
     public String toString() {
-        return  title+" - " +artist;
+        return title + " - " + artist;
     }
 }

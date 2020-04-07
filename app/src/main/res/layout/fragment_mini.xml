@@ -1,60 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.example.iveci.nmlplayer.com.ivsa.normalplayer.MiniPlay">
+    android:orientation="vertical"
+    tools:context="com.ivsa.normalplayer.Tab">
 
     <LinearLayout
         android:id="@+id/smallplay"
-        android:onClick="onClick"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="7"
         android:background="@drawable/round"
         android:gravity="center_vertical"
+        android:onClick="onClick"
         android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/imalbumart"
-            android:layout_margin="10dp"
             android:layout_width="45dp"
             android:layout_height="45dp"
+            android:layout_margin="10dp"
             android:scaleType="fitXY"
             android:src="@drawable/nothing" />
 
         <TextView
             android:id="@+id/tvmsongn"
-            android:layout_margin="5dp"
-            android:textSize="15sp"
-            android:textColor="#335555"
-            android:maxLines="1"
-            android:gravity="center_vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_margin="5dp"
             android:layout_weight="1"
-            android:text="음악을 선택하면 재생합니다." />
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:text="@string/miniDesc"
+            android:textColor="#335555"
+            android:textSize="15sp" />
 
         <ImageButton
             android:id="@+id/implay"
-            android:onClick="onClick"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="?attr/selectableItemBackground"
+            android:onClick="onClick"
             android:scaleType="fitXY"
             android:src="@drawable/play" />
 
         <ImageButton
             android:id="@+id/imnext"
-            android:onClick="onClick"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="?attr/selectableItemBackground"
+            android:onClick="onClick"
             android:scaleType="fitXY"
             android:src="@drawable/next" />
-
     </LinearLayout>
 
 </LinearLayout>

@@ -1,6 +1,5 @@
 package com.ivsa.normalplayer;
 
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -16,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
 
@@ -34,7 +34,7 @@ public class MiniPlay extends Fragment {
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            refresh();
+            updateMiniPlayer();
         }
     };
 
@@ -53,16 +53,16 @@ public class MiniPlay extends Fragment {
         songname = mini.findViewById(R.id.tvmsongn);
         pp = mini.findViewById(R.id.implay);
         registerBroadCast();
-        refresh();
+        updateMiniPlayer();
         return mini;
     }
 
+
     //UI를 새로고칩니다.
-    public void refresh() {
+    public void updateMiniPlayer() {
         if (MusicApplication.getInstance().getManager().isPlaying()) {
             pp.setImageResource(R.drawable.pause);
-        }
-        else {
+        } else {
             pp.setImageResource(R.drawable.play);
 
         }
@@ -71,8 +71,7 @@ public class MiniPlay extends Fragment {
             Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.getAlbumId()));
             Picasso.get().load(albumart).error(R.drawable.nothing).into(album);
             songname.setText(meta.getTitle());
-        }
-        else {
+        } else {
             album.setImageResource(R.drawable.nothing);
             songname.setText("음악을 선택하면 재생합니다.");
         }
