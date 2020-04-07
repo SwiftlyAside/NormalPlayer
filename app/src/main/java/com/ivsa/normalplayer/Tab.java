@@ -25,14 +25,14 @@ import com.google.android.material.tabs.TabLayout;
  * */
 
 
-public class Tab extends AppCompatActivity{
+public class Tab extends AppCompatActivity {
+    public static Context contextOfApplication;
     public final int PERMISSION_WRITE = 100;
     TabLayout tabLayout;
     ViewPager viewPager;
     ViewPagerAdapter adapter;
-    public static Context contextOfApplication;
-    public static Context getContextOfApplication()
-    {
+
+    public static Context getContextOfApplication() {
         return contextOfApplication;
     }
 
@@ -52,17 +52,11 @@ public class Tab extends AppCompatActivity{
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 Toast.makeText(getApplicationContext(),
-                        "미디어를 불러오려면 SDCard 쓰기 권한이 필요합니다. \n",Toast.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE);
-
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE);
-
+                        "미디어를 불러오려면 SDCard 쓰기 권한이 필요합니다. \n", Toast.LENGTH_SHORT).show();
             }
-        }
-        else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE);
+        } else {
             adapter.addFragment("음악", new FragmentExplorer());
             adapter.addFragment("재생목록", new FragmentPlaylist());
             viewPager.setAdapter(adapter);
@@ -83,20 +77,20 @@ public class Tab extends AppCompatActivity{
     }
 
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             //플레이어 Activity 보이기
-            case R.id.smallplay :{
+            case R.id.smallplay: {
                 Intent intent = new Intent(Tab.this, Playback.class);
                 startActivity(intent);
                 break;
             }
             //재생, 일시정지
-            case R.id.implay :{
+            case R.id.implay: {
                 MusicApplication.getInstance().getManager().toggle();
                 break;
             }
             //다음 곡
-            case R.id.imnext :{
+            case R.id.imnext: {
                 MusicApplication.getInstance().getManager().next();
                 break;
             }

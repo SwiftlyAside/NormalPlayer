@@ -4,12 +4,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.iveci.nmlplayer.com.ivsa.normalplayer.FragmentExplorer">
+    tools:context="com.ivsa.normalplayer.FragmentExplorer">
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mlist"
-        android:textFilterEnabled="true"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />

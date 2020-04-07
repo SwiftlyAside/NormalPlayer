@@ -12,9 +12,6 @@ import java.io.Serializable;
 
 class Meta implements Serializable {
     private String id;
-
-
-
     private String memberid;
     private String albumId;
     private String title;
