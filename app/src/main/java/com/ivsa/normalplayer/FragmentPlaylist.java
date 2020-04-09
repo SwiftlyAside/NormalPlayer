@@ -3,7 +3,6 @@ package com.ivsa.normalplayer;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -67,102 +65,77 @@ public class FragmentPlaylist extends Fragment {
         getPlaylist();
         adapter = new ArrayAdapter<>(getContext(), R.layout.playlist_dropdown, plist);
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    final EditText listname = new EditText(getContext());
-                    AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
-                    dlg.setIcon(R.drawable.plus)
-                            .setTitle("재생목록 생성")
-                            .setMessage("\n생성할 재생목록 이름을 입력하세요.")
-                            .setCancelable(true)
-                            .setView(listname)
-                            .setPositiveButton("생성", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    createPlaylist(listname.getText().toString());
-                                    getPlaylist();
-                                    adapter.notifyDataSetChanged();
-                                }
-                            })
-                            .setNegativeButton("취소", null)
-                            .show();
-                }
-                else {
-                    playlisttitle.setText(plist.get(position).getName());
-                    getPlaylistMember(plist.get(position));
-                    metaArrayAdapter.notifyDataSetChanged();
-                    listView.setVisibility(View.INVISIBLE);
-                    linear.setVisibility(View.VISIBLE);
-                }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            if (position == 0) {
+                final EditText listname = new EditText(getContext());
+                AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
+                dlg.setIcon(R.drawable.plus)
+                        .setTitle("재생목록 생성")
+                        .setMessage("\n생성할 재생목록 이름을 입력하세요.")
+                        .setCancelable(true)
+                        .setView(listname)
+                        .setPositiveButton("생성", (dialog, which) -> {
+                            createPlaylist(listname.getText().toString());
+                            getPlaylist();
+                            adapter.notifyDataSetChanged();
+                        })
+                        .setNegativeButton("취소", null)
+                        .show();
+            } else {
+                playlisttitle.setText(plist.get(position).getName());
+                getPlaylistMember(plist.get(position));
+                metaArrayAdapter.notifyDataSetChanged();
+                listView.setVisibility(View.INVISIBLE);
+                linear.setVisibility(View.VISIBLE);
             }
         });
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                if (position != 0) {
-                    AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
-                    dlg.setTitle("재생목록 삭제")
-                            .setIcon(R.drawable.delete)
-                            .setMessage("재생목록 "+plist.get(position)+"을(를) 삭제합니다.\n계속하시겠습니까?")
-                            .setCancelable(true)
-                            .setPositiveButton("네", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    deletePlaylist(plist.get(position));
-                                    getPlaylist();
-                                    adapter.notifyDataSetChanged();
-                                }
-                            })
-                            .setNegativeButton("아니오", null)
-                            .show();
-                }
-                return true;
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            if (position != 0) {
+                AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
+                dlg.setTitle("재생목록 삭제")
+                        .setIcon(R.drawable.delete)
+                        .setMessage("재생목록 " + plist.get(position) + "을(를) 삭제합니다.\n계속하시겠습니까?")
+                        .setCancelable(true)
+                        .setPositiveButton("네", (dialog, which) -> {
+                            deletePlaylist(plist.get(position));
+                            getPlaylist();
+                            adapter.notifyDataSetChanged();
+                        })
+                        .setNegativeButton("아니오", null)
+                        .show();
             }
+            return true;
         });
     }
 
     //재생목록 내용UI 초기화
-    public void initmembers(){
+    public void initmembers() {
         metaArrayAdapter = new ArrayAdapter<>(getContext(), R.layout.playlist_dropdown, metas);
         metaview.setAdapter(metaArrayAdapter);
-        metaview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MusicApplication.getInstance().getManager().playlistset(metas);
-                MusicApplication.getInstance().getManager().play(position);
-            }
+        metaview.setOnItemClickListener((parent, view, position, id) -> {
+            MusicApplication.getInstance().getManager().playlistset(metas);
+            MusicApplication.getInstance().getManager().play(position);
         });
-        metaview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
-                dlg.setTitle("재생목록에서 음악 제거")
-                        .setIcon(R.drawable.delete)
-                        .setMessage("다음 음악을 재생목록에서 제거합니다.\n\n" +
-                                metas.get(position) +
-                                "\n\n계속하시겠습니까?")
-                        .setCancelable(true)
-                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                deleteTrack(pid, metas.get(position));
-                                getPlaylistMember(null);
-                                metaArrayAdapter.notifyDataSetChanged();
-                            }
-                        })
-                        .setNegativeButton("아니오", null)
-                        .show();
-                return true;
-            }
+        metaview.setOnItemLongClickListener((parent, view, position, id) -> {
+            AlertDialog.Builder dlg = new AlertDialog.Builder(getContext());
+            dlg.setTitle("재생목록에서 음악 제거")
+                    .setIcon(R.drawable.delete)
+                    .setMessage("다음 음악을 재생목록에서 제거합니다.\n\n" +
+                            metas.get(position) +
+                            "\n\n계속하시겠습니까?")
+                    .setCancelable(true)
+                    .setPositiveButton("네", (dialog, which) -> {
+                        deleteTrack(pid, metas.get(position));
+                        getPlaylistMember(null);
+                        metaArrayAdapter.notifyDataSetChanged();
+                    })
+                    .setNegativeButton("아니오", null)
+                    .show();
+            return true;
         });
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listView.setVisibility(View.VISIBLE);
-                linear.setVisibility(View.INVISIBLE);
-            }
+        back.setOnClickListener(v -> {
+            listView.setVisibility(View.VISIBLE);
+            linear.setVisibility(View.INVISIBLE);
         });
     }
 
