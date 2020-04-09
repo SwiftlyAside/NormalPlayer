@@ -1,6 +1,5 @@
 package com.ivsa.normalplayer;
 
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -8,13 +7,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.squareup.picasso.Picasso;
 
@@ -33,7 +34,7 @@ public class MiniPlay extends Fragment {
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            refresh();
+            updateMiniPlayer();
         }
     };
 
@@ -52,26 +53,25 @@ public class MiniPlay extends Fragment {
         songname = mini.findViewById(R.id.tvmsongn);
         pp = mini.findViewById(R.id.implay);
         registerBroadCast();
-        refresh();
+        updateMiniPlayer();
         return mini;
     }
 
+
     //UI를 새로고칩니다.
-    public void refresh() {
+    public void updateMiniPlayer() {
         if (MusicApplication.getInstance().getManager().isPlaying()) {
             pp.setImageResource(R.drawable.pause);
-        }
-        else {
+        } else {
             pp.setImageResource(R.drawable.play);
 
         }
         Meta meta = MusicApplication.getInstance().getManager().getMeta();
         if (meta != null) {
             Uri albumart = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), Long.parseLong(meta.getAlbumId()));
-            Picasso.with(getContext()).load(albumart).error(R.drawable.nothing).into(album);
+            Picasso.get().load(albumart).error(R.drawable.nothing).into(album);
             songname.setText(meta.getTitle());
-        }
-        else {
+        } else {
             album.setImageResource(R.drawable.nothing);
             songname.setText("음악을 선택하면 재생합니다.");
         }

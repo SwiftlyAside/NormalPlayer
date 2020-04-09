@@ -15,14 +15,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /*
-* PlaybackService
-*
-* Description:
-* 음악을 재생하는 기본 서비스입니다.
-*
-* */
+ * PlaybackService
+ *
+ * Description:
+ * 음악을 재생하는 기본 서비스입니다.
+ *
+ * */
 
 public class PlaybackService extends Service {
+    public static String CHANGE = "CHANGED";
     private final IBinder ibinder = new playbackServicebinder();
     private MediaPlayer playback = new MediaPlayer();
     private ArrayList<Long> m_musics = new ArrayList<>();
@@ -31,13 +32,6 @@ public class PlaybackService extends Service {
     private int pos = 0;
     private boolean ready = false;
     private boolean playlistmode = false;
-    public static String CHANGE = "CHANGED";
-
-    class playbackServicebinder extends Binder {
-        PlaybackService getService() {
-            return PlaybackService.this;
-        }
-    }
 
     public PlaybackService() {
     }
@@ -60,17 +54,14 @@ public class PlaybackService extends Service {
                 if (isPlaymode()) {
                     if (pos < m_plmusics.size() - 1) {
                         setPlay(++pos);
-                    }
-                    else {
+                    } else {
 //                    ready = false;
                         sendBroadcast(new Intent(CHANGE));
                     }
-                }
-                else {
+                } else {
                     if (pos < m_musics.size() - 1) {
                         setPlay(++pos);
-                    }
-                    else {
+                    } else {
 //                    ready = false;
                         sendBroadcast(new Intent(CHANGE));
                     }
@@ -92,12 +83,12 @@ public class PlaybackService extends Service {
         return playlistmode;
     }
 
-    //
-
     //재생여부를 반환합니다.
     public boolean isPlaying() {
         return playback.isPlaying();
     }
+
+    //
 
     //현재 음악정보를 반환합니다.
     public Meta getMeta() {
@@ -115,9 +106,9 @@ public class PlaybackService extends Service {
             Uri musicuri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, meta.getId());
             playback.setDataSource(this, musicuri);
             playback.setAudioAttributes(new AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_MEDIA)
-            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-            .build());
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build());
             playback.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,13 +129,24 @@ public class PlaybackService extends Service {
         }
     }
 
+    // 반복재생. 토글.
+    public void setLooping() {
+        if (playback.isLooping()) {
+            playback.setLooping(false);
+        } else {
+            playback.setLooping(true);
+        }
+    }
+
+    public void setShuffle() {
+    }
+
     //선택한 위치에 있는 음악을 재생합니다. 플레이어 준비 여부에 관계없이 작동합니다.
     public void setPlay(int position) {
         if (isPlaymode()) {
             meta = m_plmusics.get(position);
             pos = position;
-        }
-        else {
+        } else {
             queryMusic(position);
         }
         setStop();
@@ -167,22 +169,20 @@ public class PlaybackService extends Service {
 
     //이전 곡 또는 처음위치로 갑니다.
     public void setPrev() {
-        if ((float) (playback.getCurrentPosition())/(float)(playback.getDuration()) < 0.15) {
+        if ((float) (playback.getCurrentPosition()) / (float) (playback.getDuration()) < 0.15) {
             if (pos > 0) pos--;
             else if (isPlaymode()) pos = m_plmusics.size() - 1;
-            else pos = m_musics.size() -1;
+            else pos = m_musics.size() - 1;
             setPlay(pos);
-        }
-        else playback.seekTo(0);
+        } else playback.seekTo(0);
     }
 
     //다음 곡으로 갑니다.
     public void setNext() {
         if (isPlaymode()) {
-            if (pos < m_plmusics.size() -1) pos++;
+            if (pos < m_plmusics.size() - 1) pos++;
             else pos = 0;
-        }
-        else {
+        } else {
             if (pos < m_musics.size() - 1) pos++;
             else pos = 0;
         }
@@ -239,10 +239,16 @@ public class PlaybackService extends Service {
     public void onDestroy() {
         super.onDestroy();
         ready = false;
-        if(playback != null) {
+        if (playback != null) {
             playback.stop();
             playback.release();
             playback = null;
+        }
+    }
+
+    class playbackServicebinder extends Binder {
+        PlaybackService getService() {
+            return PlaybackService.this;
         }
     }
 }
