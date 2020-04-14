@@ -12,9 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 
 
@@ -29,7 +30,7 @@ public class Tab extends AppCompatActivity {
     public static Context contextOfApplication;
     public final int PERMISSION_WRITE = 100;
     TabLayout tabLayout;
-    ViewPager viewPager;
+    ViewPager2 viewPager;
     ViewPagerAdapter adapter;
 
     public static Context getContextOfApplication() {
@@ -42,8 +43,8 @@ public class Tab extends AppCompatActivity {
         setContentView(R.layout.activity_tab);
         contextOfApplication = getApplicationContext();
         tabLayout = (TabLayout) findViewById(R.id.tab);
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager = (ViewPager2) findViewById(R.id.pager);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager(), this.getLifecycle());
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -56,24 +57,22 @@ public class Tab extends AppCompatActivity {
             }
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_WRITE);
-        } else {
-            adapter.addFragment("음악", new FragmentExplorer());
-            adapter.addFragment("재생목록", new FragmentPlaylist());
-            viewPager.setAdapter(adapter);
-            tabLayout.setupWithViewPager(viewPager);
-        }
+        } else setViewPager();
+    }
+
+    private void setViewPager() {
+        adapter.addFragment("음악", new FragmentExplorer());
+        adapter.addFragment("재생목록", new FragmentPlaylist());
+        viewPager.setAdapter(adapter);
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText("OBJECT" + (position + 1))).attach();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_WRITE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                adapter.addFragment("음악", new FragmentExplorer());
-                adapter.addFragment("재생목록", new FragmentPlaylist());
-                viewPager.setAdapter(adapter);
-                tabLayout.setupWithViewPager(viewPager);
-            }
-        }
+        if (requestCode == PERMISSION_WRITE)
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                setViewPager();
     }
 
     public void onClick(View v) {
