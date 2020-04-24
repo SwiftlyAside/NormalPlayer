@@ -40,41 +40,32 @@ public class PlaybackService extends Service {
     public void onCreate() {
         super.onCreate();
         playback.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-        playback.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                ready = true;
-                mp.start();
-                sendBroadcast(new Intent(CHANGE));
-            }
+        playback.setOnPreparedListener(mp -> {
+            ready = true;
+            mp.start();
+            sendBroadcast(new Intent(CHANGE));
         });
-        playback.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                if (isPlaymode()) {
-                    if (pos < m_plmusics.size() - 1) {
-                        setPlay(++pos);
-                    } else {
-//                    ready = false;
-                        sendBroadcast(new Intent(CHANGE));
-                    }
+        playback.setOnCompletionListener(mp -> {
+            if (isPlaymode()) {
+                if (pos < m_plmusics.size() - 1) {
+                    setPlay(++pos);
                 } else {
-                    if (pos < m_musics.size() - 1) {
-                        setPlay(++pos);
-                    } else {
 //                    ready = false;
-                        sendBroadcast(new Intent(CHANGE));
-                    }
+                    sendBroadcast(new Intent(CHANGE));
                 }
+            } else {
+                if (pos < m_musics.size() - 1) {
+                    setPlay(++pos);
+                } else {
+//                    ready = false;
+                    sendBroadcast(new Intent(CHANGE));
+                }
+            }
 
-            }
         });
-        playback.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                ready = false;
-                return false;
-            }
+        playback.setOnErrorListener((mp, what, extra) -> {
+            ready = false;
+            return false;
         });
     }
 
