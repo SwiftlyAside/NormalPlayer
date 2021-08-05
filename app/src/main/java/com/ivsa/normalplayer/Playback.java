@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
+
 
 /*
  * Playback
@@ -54,14 +56,14 @@ public class Playback extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) { //초기화
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
-        album = (ImageView) findViewById(R.id.ialbumart);
-        iplay = (ImageButton) findViewById(R.id.bstst);
-        timeseek = (SeekBar) findViewById(R.id.timeseek);
-        sinfo = (TextView) findViewById(R.id.songinfo);
-        ainfo = (TextView) findViewById(R.id.ars_albinfo);
-        nowpos = (TextView) findViewById(R.id.snowpos);
-        endpos = (TextView) findViewById(R.id.sendpos);
+        Objects.requireNonNull(getSupportActionBar()).hide();
+        album = findViewById(R.id.ialbumart);
+        iplay = findViewById(R.id.bstst);
+        timeseek = findViewById(R.id.timeseek);
+        sinfo = findViewById(R.id.songinfo);
+        ainfo = findViewById(R.id.ars_albinfo);
+        nowpos = findViewById(R.id.snowpos);
+        endpos = findViewById(R.id.sendpos);
         registerBroadCast();
         refresh();
 
@@ -160,8 +162,6 @@ public class Playback extends AppCompatActivity {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-
             }
         }
     }

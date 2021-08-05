@@ -145,7 +145,7 @@ public class FragmentPlaylist extends Fragment {
         plist.add(new Playlist(-1,"새 재생목록 만들기"));
         String[] proj = {
                 MediaStore.Audio.Playlists._ID, MediaStore.Audio.Playlists.NAME};
-        String order = MediaStore.Audio.Playlists.NAME + " COLLATE LOCALIZED ASC";
+        String order = MediaStore.Audio.Playlists.NAME + " ASC";
         Cursor cursor = appContext.getContentResolver().query(MediaStore.Audio.Playlists.EXTERNAL_CONTENT_URI
                 ,proj,null,null,order);
         if (cursor.getCount() >= 1) {

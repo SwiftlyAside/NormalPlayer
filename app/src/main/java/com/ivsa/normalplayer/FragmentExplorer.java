@@ -57,7 +57,7 @@ public class FragmentExplorer extends Fragment {
                         MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
                         MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DURATION};
                 String select = MediaStore.Audio.Media.IS_MUSIC + " = 1";
-                String order = MediaStore.Audio.Media.TITLE + " COLLATE LOCALIZED ASC";
+                String order = MediaStore.Audio.Media.TITLE + " ASC";
                 return new CursorLoader(getContext(),
                         uri, proj, select, null, order);
             }
