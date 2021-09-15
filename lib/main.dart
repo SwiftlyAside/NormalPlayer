@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:normal_player/constants.dart';
+import 'package:normal_player/services/layout_service.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-void main() async {
-  await Permission.mediaLibrary.status;
-// setupLocator();
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -15,23 +14,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: NormalTheme.createMaterialColor(const Color(0xff60bfbf)),
-      ),
-      debugShowCheckedModeBanner: false,
-      home: Wrapper(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(
-              child: Container(),
-            ),
-            Container(
-              height: 60,
-              color: const Color(0xff60bfbf),
-            )
-          ],
+    Permission.storage
+        .request()
+        .then((value) => {if (!value.isGranted) print('not granted!')});
+
+    return MultiProvider(
+      providers: [Provider<LayoutService>(create: (_) => LayoutService())],
+      child: MaterialApp(
+        theme: ThemeData(
+          primarySwatch:
+              NormalTheme.createMaterialColor(const Color(0xff60bfbf)),
+        ),
+        debugShowCheckedModeBanner: false,
+        home: Wrapper(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: Text(
+                  '${Permission.mediaLibrary.status}',
+                  style: const TextStyle(fontSize: 8),
+                ),
+              ),
+              Container(
+                height: 60,
+                color: const Color(0xff60bfbf),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -43,13 +53,13 @@ class Wrapper extends StatelessWidget {
 
   const Wrapper({Key? key, required this.child}) : super(key: key);
 
-  // TODO locate layoutService.
-
   @override
   Widget build(BuildContext context) {
+    var layoutService = Provider.of<LayoutService>(context);
+
     return SlidingUpPanel(
       panel: Container(),
-      // controller: layoutService.globalPanelController,
+      controller: layoutService.globalPanelController,
       minHeight: 60,
       maxHeight: MediaQuery.of(context).size.height,
       backdropEnabled: true,

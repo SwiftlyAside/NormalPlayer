@@ -37,8 +37,13 @@ dependencies:
   just_audio: ^0.9.11
   rxdart: ^0.27.2
   permission_handler: ^8.1.6
-  get_it: ^7.2.0
   sliding_up_panel: ^2.0.0+1
+  uuid: ^3.0.4
+  path_provider: ^2.0.3
+  provider: ^6.0.0
+  palette_generator: ^0.3.1
+  shared_preferences: ^2.0.7
+  crypto: ^3.0.1
 
 dev_dependencies:
   flutter_test:
