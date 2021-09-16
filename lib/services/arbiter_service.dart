@@ -19,8 +19,8 @@ class ArbiterService {
 
   List get musicFiles => _musicFiles;
 
-  Map mapMetaData = Map();
-  Uuid uuid = Uuid();
+  Map mapMetaData = {};
+  Uuid uuid = const Uuid();
 
   Future<String> getLocalPath() async {
     Directory dir = await getApplicationDocumentsDirectory();
@@ -78,7 +78,7 @@ class ArbiterService {
   Future<void> getMusicFiles() async {
     Directory? ext = await getExternalStorageDirectory();
     await readExtDir(ext!);
-    String sdPath = await getSdCardPath();
+    String? sdPath = await getSdCardPath();
     if (sdPath == null) {
       print("NO SDCARD ON THIS DEVICE");
     } else {

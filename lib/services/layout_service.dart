@@ -26,8 +26,8 @@ class LayoutService {
   void _initGlobalPageView() => _globalPageController = PageController();
 
   void _initSubPageViews() {
-    _pageServices = List.empty();
-    for (var i = 0; i < _pageServices.length; i++) {
+    _pageServices = List.empty(growable: true);
+    for (var i = 0; i < 2; i++) {
       _pageServices.add(PageService(i));
     }
   }

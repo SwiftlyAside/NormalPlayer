@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:normal_player/constants.dart';
+import 'package:normal_player/root.dart';
 import 'package:normal_player/services/layout_service.dart';
+import 'package:normal_player/services/music_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 void main() {
   runApp(const MyApp());
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: NormalTheme.kNormalThemeData.primaryColor));
 }
 
 class MyApp extends StatelessWidget {
@@ -19,22 +24,19 @@ class MyApp extends StatelessWidget {
         .then((value) => {if (!value.isGranted) print('not granted!')});
 
     return MultiProvider(
-      providers: [Provider<LayoutService>(create: (_) => LayoutService())],
+      providers: [
+        Provider<MusicService>(create: (_) => MusicService()),
+        Provider<LayoutService>(create: (_) => LayoutService()),
+      ],
       child: MaterialApp(
-        theme: ThemeData(
-          primarySwatch:
-              NormalTheme.createMaterialColor(const Color(0xff60bfbf)),
-        ),
+        theme: NormalTheme.kNormalThemeData,
         debugShowCheckedModeBanner: false,
         home: Wrapper(
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Expanded(
-                child: Text(
-                  '${Permission.mediaLibrary.status}',
-                  style: const TextStyle(fontSize: 8),
-                ),
+              const Expanded(
+                child: Root(),
               ),
               Container(
                 height: 60,

@@ -22,6 +22,10 @@ class NormalTheme {
     }
     return MaterialColor(color.value, swatch);
   }
+
+  static var kNormalThemeData = ThemeData(
+    primarySwatch: createMaterialColor(const Color(0xff60bfbf)),
+  );
 }
 
 class NormalUtils {
