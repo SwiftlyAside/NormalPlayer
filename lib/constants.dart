@@ -23,8 +23,9 @@ class NormalTheme {
     return MaterialColor(color.value, swatch);
   }
 
+  static const kBackgroundColor = Color(0xffeefdfa);
   static var kNormalThemeData = ThemeData(
-    primarySwatch: createMaterialColor(const Color(0xff60bfbf)),
+    primarySwatch: createMaterialColor(const Color(0xff77bfbf)),
   );
 }
 

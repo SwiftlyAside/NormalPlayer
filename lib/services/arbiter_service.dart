@@ -8,7 +8,8 @@ import 'package:normal_player/models/tune.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
-// Nano 대체
+// Internal Service of Music Service.
+// For use of MethodChannel
 class ArbiterService {
   // 플랫폼별 메소드채널 (그래서 iOS 작동안함)
   MethodChannel platform =
@@ -76,13 +77,13 @@ class ArbiterService {
   }
 
   Future<void> getMusicFiles() async {
-    Directory? ext = await getExternalStorageDirectory();
-    await readExtDir(ext!);
+    Directory ext = (await getExternalStorageDirectory())!;
+    await readExtDir(ext.parent.parent.parent.parent);
     String? sdPath = await getSdCardPath();
     if (sdPath == null) {
-      print("NO SDCARD ON THIS DEVICE");
+      debugPrint("NO SDCARD ON THIS DEVICE");
     } else {
-      print(sdPath);
+      debugPrint(sdPath);
       String sdCardDir = Directory(sdPath).parent.parent.parent.parent.path;
       await readExtDir(Directory(sdCardDir));
     }
@@ -92,7 +93,6 @@ class ArbiterService {
     for (var track in _musicFiles) {
       var data = await getFileMetaData(track);
       // updateLoadingTrack(track, _musicFiles.indexOf(track), _musicFiles.length);
-      // print(track);
       if (data[2] != null) {
         if (data[2] is List<int>) {
           var digest = sha1.convert(data[2]).toString();
@@ -117,7 +117,9 @@ class ArbiterService {
       } else {
         value = mapMetaData[track];
       }
-    } catch (e) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
     return value;
   }
 

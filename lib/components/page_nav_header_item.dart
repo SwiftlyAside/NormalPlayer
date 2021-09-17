@@ -16,14 +16,11 @@ class PageNavHeaderItem extends StatelessWidget {
       required this.pageIndex})
       : super(key: key);
 
-  onAfterBuild(context) {
-    var layoutService = Provider.of<LayoutService>(context);
-    layoutService.pageServices[pageIndex].setSize(index);
-  }
-
   @override
   Widget build(BuildContext context) {
+    var layoutService = Provider.of<LayoutService>(context);
     return StreamBuilder<double>(
+      stream: layoutService.pageServices[pageIndex].pageIndex$,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container();
@@ -47,9 +44,10 @@ class PageNavHeaderItem extends StatelessWidget {
           }
         }
 
-        WidgetsBinding.instance!
-            .addPostFrameCallback((_) => onAfterBuild(context));
+        WidgetsBinding.instance!.addPostFrameCallback(
+            (_) => layoutService.pageServices[pageIndex].setSize(index));
         return Container(
+          padding: const EdgeInsets.only(right: 10.0),
           alignment: Alignment.centerLeft,
           child: Text(
             title,

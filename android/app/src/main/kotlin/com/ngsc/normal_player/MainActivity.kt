@@ -51,15 +51,7 @@ class MainActivity: FlutterActivity() {
                     }
                     result.success(removableStoragePath)
                 }
-
-                // getColor 는 flutter에서 하십쇼~
             }
         }
-    }
-    fun getDominantColor(bitmap: Bitmap): Int {
-        val newBitmap = Bitmap.createScaledBitmap(bitmap, 1, 1, true)
-        val color = newBitmap.getPixel(0, 0)
-        newBitmap.recycle()
-        return color
     }
 }

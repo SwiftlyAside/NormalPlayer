@@ -55,21 +55,16 @@ class MusicService {
   void playMusic(Tune song) {
     _audioPlayer.setUrl(song.uri!);
     _audioPlayer.play();
-    updatePlayerState(PlayerStatus.playing, song);
+    _playerState$.add(MapEntry(PlayerStatus.playing, song));
   }
 
   void pauseMusic(Tune song) {
     _audioPlayer.pause();
-    updatePlayerState(PlayerStatus.paused, song);
+    _playerState$.add(MapEntry(PlayerStatus.paused, song));
   }
 
   void stopMusic() {
     _audioPlayer.stop();
-  }
-
-  void updatePlayerState(PlayerStatus state, Tune song) {
-    _playerState$.add(MapEntry(state, song));
-    // themeService.updateTheme(song);
   }
 
   void updatePosition(Duration duration) {

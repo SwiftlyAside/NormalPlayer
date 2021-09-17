@@ -30,8 +30,10 @@ class _PageNavHeaderState extends State<PageNavHeader> {
               child: ListView.builder(
             padding: EdgeInsets.only(right: MediaQuery.of(context).size.width),
             physics: const NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.horizontal,
             controller:
                 layoutService.pageServices[widget.pageIndex].headerController,
+            itemCount: headerItems[widget.pageIndex]!.length,
             itemBuilder: (context, index) {
               var items = headerItems[widget.pageIndex]!;
               return PageNavHeaderItem(

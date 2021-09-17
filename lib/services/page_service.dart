@@ -42,6 +42,8 @@ class PageService {
       return;
     }
     GlobalKey key = headerItems[id]![index].value;
+
+    print('ID, index: $id, $index, ${key.currentContext.toString()}');
     RenderBox renderBoxRed =
         key.currentContext!.findRenderObject() as RenderBox;
     double width = renderBoxRed.size.width;

@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:normal_player/constants.dart';
+import 'package:normal_player/pages/collection/collection.page.dart';
 import 'package:normal_player/pages/library/library.page.dart';
 import 'package:normal_player/services/layout_service.dart';
 import 'package:normal_player/services/music_service.dart';
 import 'package:provider/provider.dart';
+
+import 'components/bottom_nav_bar.dart';
 
 enum StartupState { busy, success, error }
 
@@ -51,6 +55,8 @@ class _RootState extends State<Root> with TickerProviderStateMixin {
     loadFiles();
     return WillPopScope(
       child: Scaffold(
+        bottomNavigationBar: const BottomNavBar(),
+        backgroundColor: NormalTheme.kBackgroundColor,
         body: StreamBuilder<StartupState>(
           stream: _startupStatus.stream,
           builder: (context, snapshot) {
@@ -66,27 +72,45 @@ class _RootState extends State<Root> with TickerProviderStateMixin {
               child: Column(
                 children: [
                   Expanded(
-                      child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Expanded(
-                            child: PageView(
-                              controller: layoutService.globalPageController,
-                              physics: const NeverScrollableScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                const LibraryPage(),
-                                Container(), // TODO CollectionPage
-                              ],
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Expanded(
+                              child: PageView(
+                                controller: layoutService.globalPageController,
+                                physics: const NeverScrollableScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  const LibraryPage(),
+                                  CollectionsPage(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          child: Container(
+                            alignment: Alignment.center,
+                            color: NormalTheme.kNormalThemeData.primaryColor,
+                            height: 50,
+                            width: 53,
+                            child: const InkWell(
+                              child: Icon(
+                                Icons.sort,
+                                size: 22,
+                                color: Colors.white54,
+                              ),
                             ),
                           ),
-                        ],
-                      )
-                    ],
-                  ))
+                        )
+                      ],
+                    ),
+                  )
                 ],
               ),
             );
