@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:normal_player/models/playerstatus.dart';
 import 'package:normal_player/models/tune.dart';
@@ -25,10 +27,9 @@ class MusicCard extends StatelessWidget {
         final bool _isSelectedSong = _song == _currentSong;
         final _textColor = _isSelectedSong ? Colors.black : Colors.black54;
         final _fontWeight = _isSelectedSong ? FontWeight.w900 : FontWeight.w400;
-        // final _image = _song.albumArt != null
-        //     ? FileImage(File(_song.albumArt!))
-        //     : const AssetImage('images/track.png') as ImageProvider;
-        final _image = AssetImage('images/track.png');
+        final _image = _song.albumArt != null
+            ? FileImage(File(_song.albumArt!))
+            : const AssetImage('images/track.png') as ImageProvider;
 
         return Container(
           color: Colors.transparent,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:normal_player/components/page_nav_header.dart';
+import 'package:normal_player/pages/library/albums.page.dart';
+import 'package:normal_player/pages/library/artists.page.dart';
 import 'package:normal_player/pages/library/tracks.page.dart';
 import 'package:normal_player/services/layout_service.dart';
 import 'package:provider/provider.dart';
@@ -17,10 +19,10 @@ class LibraryPage extends StatelessWidget {
             child: PageView(
           physics: const AlwaysScrollableScrollPhysics(),
           controller: layoutService.pageServices[0].pageViewController,
-          children: [
-            const TracksPage(),
-            Container(), // TODO ArtistsPage
-            Container(), // TODO AlbumsPage
+          children: const [
+            TracksPage(),
+            ArtistsPage(),
+            AlbumsPage(),
           ],
         ))
       ],

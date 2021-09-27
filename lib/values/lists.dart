@@ -25,7 +25,7 @@ final Map<int, List<MapEntry<String, GlobalKey>>> headerItems = {
 final List<MapEntry<String, Icon>> bottomNavBarItems = [
   const MapEntry("Library", Icon(CupertinoIcons.rectangle_stack)),
   const MapEntry("Playlists", Icon(CupertinoIcons.music_note_list)),
-  const MapEntry("Search", Icon(CupertinoIcons.search)),
+  // const MapEntry("Search", Icon(CupertinoIcons.search)),
   const MapEntry("Equalizer", Icon(CupertinoIcons.waveform)),
   const MapEntry("Settings", Icon(CupertinoIcons.gear_alt_fill)),
 ];
